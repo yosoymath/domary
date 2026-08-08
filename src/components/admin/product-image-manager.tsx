@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { AdminFieldError, adminInputClassName } from "@/components/admin/form-elements";
+import { useToast } from "@/components/ui/toast";
 
 const MAX_IMAGES = 8;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -31,9 +32,9 @@ export function ProductImageManager({ initialImages, errors, onUploadingChange }
   errors?: string[];
   onUploadingChange: (uploading: boolean) => void;
 }) {
+  const { showToast } = useToast();
   const [images, setImages] = useState<ProductImage[]>(() => existingImages(initialImages));
   const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState<string>();
   const [urlInput, setUrlInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -45,7 +46,7 @@ export function ProductImageManager({ initialImages, errors, onUploadingChange }
   async function uploadFiles(fileList: FileList | File[]) {
     const remainingSlots = MAX_IMAGES - images.length;
     if (remainingSlots <= 0) {
-      setMessage(`Você pode cadastrar no máximo ${MAX_IMAGES} imagens.`);
+      showToast({ message: `Você pode cadastrar no máximo ${MAX_IMAGES} imagens.`, variant: "warning" });
       return;
     }
 
@@ -54,11 +55,10 @@ export function ProductImageManager({ initialImages, errors, onUploadingChange }
 
     const invalidFile = selectedFiles.find((file) => !ACCEPTED_TYPES.has(file.type) || file.size > MAX_FILE_SIZE);
     if (invalidFile) {
-      setMessage(`“${invalidFile.name}” deve ser JPG, PNG ou WebP e ter no máximo 5 MB.`);
+      showToast({ message: `“${invalidFile.name}” deve ser JPG, PNG ou WebP e ter no máximo 5 MB.`, variant: "error" });
       return;
     }
 
-    setMessage(undefined);
     setUploadState(true);
     const uploaded: ProductImage[] = [];
 
@@ -77,9 +77,9 @@ export function ProductImageManager({ initialImages, errors, onUploadingChange }
       }
 
       setImages((current) => [...current, ...uploaded]);
-      setMessage(`${uploaded.length} ${uploaded.length === 1 ? "imagem adicionada" : "imagens adicionadas"} com sucesso.`);
+      showToast({ message: `${uploaded.length} ${uploaded.length === 1 ? "imagem adicionada" : "imagens adicionadas"} com sucesso.`, variant: "success" });
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Não foi possível enviar as imagens.");
+      showToast({ message: error instanceof Error ? error.message : "Não foi possível enviar as imagens.", variant: "error" });
       if (uploaded.length) setImages((current) => [...current, ...uploaded]);
     } finally {
       setUploadState(false);
@@ -91,7 +91,7 @@ export function ProductImageManager({ initialImages, errors, onUploadingChange }
     const url = urlInput.trim();
     if (!url) return;
     if (images.length >= MAX_IMAGES) {
-      setMessage(`Você pode cadastrar no máximo ${MAX_IMAGES} imagens.`);
+      showToast({ message: `Você pode cadastrar no máximo ${MAX_IMAGES} imagens.`, variant: "warning" });
       return;
     }
 
@@ -99,18 +99,18 @@ export function ProductImageManager({ initialImages, errors, onUploadingChange }
       const parsed = new URL(url);
       if (!["http:", "https:"].includes(parsed.protocol)) throw new Error("invalid");
     } catch {
-      setMessage("Informe uma URL HTTP válida.");
+      showToast({ message: "Informe uma URL HTTP válida.", variant: "error" });
       return;
     }
 
     if (images.some((image) => image.url === url)) {
-      setMessage("Essa imagem já foi adicionada.");
+      showToast({ message: "Essa imagem já foi adicionada.", variant: "warning" });
       return;
     }
 
     setImages((current) => [...current, { id: newImageId(), url, label: "Imagem por URL" }]);
     setUrlInput("");
-    setMessage("Imagem adicionada por URL.");
+    showToast({ message: "Imagem adicionada por URL.", variant: "success" });
   }
 
   function makeCover(index: number) {
@@ -135,7 +135,7 @@ export function ProductImageManager({ initialImages, errors, onUploadingChange }
 
   function removeImage(id: string) {
     setImages((current) => current.filter((image) => image.id !== id));
-    setMessage("Imagem removida da seleção. Salve o produto para confirmar.");
+    showToast({ message: "Imagem removida da seleção. Salve o produto para confirmar.", variant: "info" });
   }
 
   return (
@@ -230,7 +230,6 @@ export function ProductImageManager({ initialImages, errors, onUploadingChange }
         </div>
       </div>
 
-      <p aria-live="polite" className={`mt-3 min-h-5 text-xs font-semibold ${message?.includes("sucesso") || message?.includes("adicionada") ? "text-emerald-700" : "text-black/50"}`}>{message}</p>
       <AdminFieldError messages={errors} />
     </section>
   );

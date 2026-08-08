@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { AdminFieldError } from "@/components/admin/form-elements";
 import { RequiredMark } from "@/components/ui/required-mark";
+import { useToast } from "@/components/ui/toast";
 
 export type ProductVariantFormValue = {
   size: string | null;
@@ -101,11 +102,11 @@ function PlusIcon() {
 }
 
 export function ProductVariantEditor({ errors, initialVariants }: ProductVariantEditorProps) {
+  const { showToast } = useToast();
   const [editor, setEditor] = useState<EditorState>(() => createInitialState(initialVariants));
   const [customSize, setCustomSize] = useState("");
   const [colorName, setColorName] = useState("");
   const [colorHex, setColorHex] = useState("#111111");
-  const [message, setMessage] = useState("");
   const idCounter = useRef(0);
 
   function nextId(prefix: string) {
@@ -118,7 +119,7 @@ export function ProductVariantEditor({ errors, initialVariants }: ProductVariant
     const normalizedValue = value?.trim() || null;
 
     if (editor.sizes.some((size) => normalized(size.value) === normalized(normalizedValue))) {
-      setMessage(`O tamanho ${label} já foi adicionado.`);
+      showToast({ message: `O tamanho ${label} já foi adicionado.`, variant: "warning" });
       return;
     }
 
@@ -129,12 +130,11 @@ export function ProductVariantEditor({ errors, initialVariants }: ProductVariant
       return { ...current, sizes: [...current.sizes, size], stocks };
     });
     setCustomSize("");
-    setMessage("");
   }
 
   function removeSize(sizeId: string) {
     if (editor.sizes.length === 1) {
-      setMessage("O produto precisa ter ao menos um tamanho ou a opção Único.");
+      showToast({ message: "O produto precisa ter ao menos um tamanho ou a opção Único.", variant: "warning" });
       return;
     }
 
@@ -143,17 +143,16 @@ export function ProductVariantEditor({ errors, initialVariants }: ProductVariant
       sizes: current.sizes.filter((size) => size.id !== sizeId),
       stocks: Object.fromEntries(Object.entries(current.stocks).filter(([key]) => !key.startsWith(`${sizeId}::`))),
     }));
-    setMessage("");
   }
 
   function addColor(name: string | null, hex: string | null) {
     const trimmedName = name?.trim() || null;
     if (trimmedName && trimmedName.length < 2) {
-      setMessage("Informe um nome de cor com pelo menos 2 caracteres.");
+      showToast({ message: "Informe um nome de cor com pelo menos 2 caracteres.", variant: "error" });
       return;
     }
     if (editor.colors.some((color) => normalized(color.name) === normalized(trimmedName))) {
-      setMessage(trimmedName ? `A cor ${trimmedName} já foi adicionada.` : "A opção sem cor já foi adicionada.");
+      showToast({ message: trimmedName ? `A cor ${trimmedName} já foi adicionada.` : "A opção sem cor já foi adicionada.", variant: "warning" });
       return;
     }
 
@@ -164,12 +163,11 @@ export function ProductVariantEditor({ errors, initialVariants }: ProductVariant
       return { ...current, colors: [...current.colors, color], stocks };
     });
     setColorName("");
-    setMessage("");
   }
 
   function removeColor(colorId: string) {
     if (editor.colors.length === 1) {
-      setMessage("O produto precisa ter ao menos uma cor ou a opção Sem cor.");
+      showToast({ message: "O produto precisa ter ao menos uma cor ou a opção Sem cor.", variant: "warning" });
       return;
     }
 
@@ -178,7 +176,6 @@ export function ProductVariantEditor({ errors, initialVariants }: ProductVariant
       colors: current.colors.filter((color) => color.id !== colorId),
       stocks: Object.fromEntries(Object.entries(current.stocks).filter(([key]) => !key.endsWith(`::${colorId}`))),
     }));
-    setMessage("");
   }
 
   function changeColorHex(colorId: string, hex: string) {
@@ -344,7 +341,7 @@ export function ProductVariantEditor({ errors, initialVariants }: ProductVariant
         </div>
       </div>
 
-      <p aria-live="polite" className={`mt-3 min-h-5 text-xs ${message ? "text-amber-700" : "text-black/40"}`}>{message || "As alterações na grade serão salvas junto com o produto."}</p>
+      <p className="mt-3 text-xs text-black/40">As alterações na grade serão salvas junto com o produto.</p>
       <AdminFieldError messages={errors} />
     </div>
   );

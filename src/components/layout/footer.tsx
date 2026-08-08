@@ -16,9 +16,9 @@ export function Footer() {
         <div>
           <h2 className="text-sm font-semibold tracking-wide uppercase">Loja</h2>
           <div className="mt-4 flex flex-col gap-3 text-sm text-white/60">
-            <Link href="#produtos">Mais vendidos</Link>
-            <Link href="#categorias">Roupas</Link>
-            <Link href="#categorias">Acessórios</Link>
+            <Link href="/#produtos">Mais vendidos</Link>
+            <Link href="/#categorias">Roupas</Link>
+            <Link href="/#categorias">Acessórios</Link>
           </div>
         </div>
 

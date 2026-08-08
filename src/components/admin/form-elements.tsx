@@ -7,7 +7,7 @@ export function AdminFieldError({ messages }: { messages?: string[] }) {
   return <p className="mt-1.5 text-xs font-semibold text-red-600">{messages[0]}</p>;
 }
 
-export function AdminFormAlert({ message }: { message?: string }) {
-  if (!message) return null;
-  return <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700" role="alert">{message}</div>;
+export function AdminFormAlert({ message, trigger }: { message?: string; trigger?: unknown }) {
+  return <ToastFeedback message={message ?? ""} trigger={trigger} variant="error" />;
 }
+import { ToastFeedback } from "@/components/ui/toast";

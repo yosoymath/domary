@@ -2,6 +2,7 @@ import Link from "next/link";
 import { deleteProduct } from "@/actions/admin";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { DeleteForm } from "@/components/admin/delete-form";
+import { ToastFeedback } from "@/components/ui/toast";
 import { formatCurrency } from "@/lib/formatters";
 import { getAdminProducts } from "@/lib/admin/catalog";
 
@@ -14,11 +15,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
     <>
       <AdminPageHeader eyebrow="Catálogo" title="Produtos" description="Gerencie preços, imagens, publicação e estoque por tamanho." actionHref="/admin/products/new" actionLabel="Adicionar produto" />
 
-      {params.error === "product-has-orders" ? (
-        <div className="mb-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800" role="alert">
-          Este produto possui pedidos vinculados e não pode ser excluído. Altere seu status para “Arquivado”.
-        </div>
-      ) : null}
+      {params.error === "product-has-orders" ? <ToastFeedback message="Este produto possui pedidos vinculados e não pode ser excluído. Altere seu status para “Arquivado”." variant="warning" /> : null}
 
       <div className="overflow-hidden rounded-2xl border border-black/8 bg-white shadow-sm">
         <div className="overflow-x-auto">

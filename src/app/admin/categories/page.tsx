@@ -3,6 +3,7 @@ import { deleteCategory } from "@/actions/admin";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { CategoryForm } from "@/components/admin/category-form";
 import { DeleteForm } from "@/components/admin/delete-form";
+import { ToastFeedback } from "@/components/ui/toast";
 import { getAdminCategories } from "@/lib/admin/catalog";
 
 export default async function AdminCategoriesPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
@@ -11,7 +12,7 @@ export default async function AdminCategoriesPage({ searchParams }: { searchPara
   return (
     <>
       <AdminPageHeader eyebrow="Catálogo" title="Categorias" description="Organize os produtos em coleções fáceis de encontrar na vitrine." />
-      {params.error === "category-has-products" ? <div className="mb-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800" role="alert">Esta categoria possui produtos vinculados. Mova os produtos antes de excluí-la.</div> : null}
+      {params.error === "category-has-products" ? <ToastFeedback message="Esta categoria possui produtos vinculados. Mova os produtos antes de excluí-la." variant="warning" /> : null}
 
       <div className="grid gap-6 xl:grid-cols-[22rem_minmax(0,1fr)]">
         <div><h2 className="mb-3 text-sm font-black tracking-[0.12em] text-black/40 uppercase">Nova categoria</h2><CategoryForm /></div>

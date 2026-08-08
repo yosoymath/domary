@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { NavigationFeedback } from "@/components/layout/navigation-feedback";
 import { PageTransition } from "@/components/layout/page-transition";
+import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
 const themeInitializationScript = `
@@ -31,10 +32,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="pt-BR" suppressHydrationWarning>
       <head><script dangerouslySetInnerHTML={{ __html: themeInitializationScript }} /></head>
       <body className="min-h-screen antialiased">
-        <Suspense fallback={null}><NavigationFeedback /></Suspense>
-        <Header />
-        <main><PageTransition>{children}</PageTransition></main>
-        <Footer />
+        <ToastProvider>
+          <Suspense fallback={null}><NavigationFeedback /></Suspense>
+          <Header />
+          <main><PageTransition>{children}</PageTransition></main>
+          <Footer />
+        </ToastProvider>
       </body>
     </html>
   );

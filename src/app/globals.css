@@ -241,14 +241,67 @@ a[href]:active {
   }
 }
 
-@keyframes session-toast-enter {
+@keyframes toast-enter {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translate3d(44px, -6px, 0) scale(0.94);
+  }
+  68% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(-4px, 0, 0) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toast-icon-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.55) rotate(-12deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.1) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes toast-exit {
+  from {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translate3d(24px, -2px, 0) scale(0.97);
+  }
+}
+
+@keyframes toast-enter-reduced {
   from {
     opacity: 0;
-    transform: translate(-50%, 14px) scale(0.97);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes toast-exit-reduced {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
 
@@ -269,9 +322,8 @@ a[href]:active {
 }
 
 .route-changing .page-transition {
-  filter: blur(0.35px);
-  opacity: 0.72;
-  transform: translateY(3px) scale(0.998);
+  opacity: 0.88;
+  transform: translateY(1px) scale(0.999);
 }
 
 .navigation-progress {
@@ -313,32 +365,19 @@ a[href]:active {
   transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.session-toast {
-  align-items: center;
-  background: #111111;
-  border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 18px;
-  bottom: max(20px, env(safe-area-inset-bottom));
-  box-shadow: 0 18px 50px rgb(0 0 0 / 28%);
-  color: white;
-  display: flex;
-  gap: 12px;
-  left: 50%;
-  max-width: calc(100vw - 32px);
-  opacity: 0;
-  padding: 12px 14px;
-  pointer-events: none;
-  position: fixed;
-  transform: translate(-50%, 14px) scale(0.97);
-  visibility: hidden;
-  width: max-content;
-  z-index: 210;
+.toast-item {
+  animation: toast-enter 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: top right;
+  will-change: opacity, transform, filter;
 }
 
-.session-toast[data-visible="true"] {
-  animation: session-toast-enter 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  opacity: 1;
-  visibility: visible;
+.toast-item[data-exiting="true"] {
+  animation: toast-exit 240ms cubic-bezier(0.4, 0, 1, 1) both;
+  pointer-events: none;
+}
+
+.toast-item [data-toast-icon] {
+  animation: toast-icon-enter 320ms cubic-bezier(0.16, 1, 0.3, 1) 90ms both;
 }
 
 .account-menu-popover {
@@ -353,8 +392,19 @@ a[href]:active {
 
   .page-transition,
   .account-menu-popover,
-  .navigation-progress span,
-  .session-toast {
+  .navigation-progress span {
+    animation: none;
+  }
+
+  .toast-item {
+    animation: toast-enter-reduced 240ms ease-out both;
+  }
+
+  .toast-item[data-exiting="true"] {
+    animation: toast-exit-reduced 240ms ease-in both;
+  }
+
+  .toast-item [data-toast-icon] {
     animation: none;
   }
 

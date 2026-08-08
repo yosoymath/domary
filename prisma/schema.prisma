@@ -12,6 +12,14 @@ enum UserRole {
   ADMIN
 }
 
+enum Gender {
+  FEMALE
+  MALE
+  NON_BINARY
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
 enum ProductStatus {
   DRAFT
   ACTIVE
@@ -35,19 +43,44 @@ enum PaymentStatus {
 }
 
 model User {
-  id           String     @id @default(uuid()) @db.Uuid
+  id           String            @id @default(uuid()) @db.Uuid
   name         String
-  email        String     @unique
+  email        String            @unique
   passwordHash String
   phone        String?
-  role         UserRole   @default(CUSTOMER)
+  cpf          String?           @unique @db.VarChar(11)
+  birthDate    DateTime?         @db.Date
+  gender       Gender?
+  role         UserRole          @default(CUSTOMER)
   orders       Order[]
   favorites    Favorite[]
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  addresses    CustomerAddress[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 
   @@index([role])
   @@map("users")
+}
+
+model CustomerAddress {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label      String
+  postalCode String   @db.VarChar(8)
+  street     String
+  number     String
+  complement String?
+  district   String
+  city       String
+  state      String   @db.Char(2)
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId, isPrimary])
+  @@index([userId, createdAt])
+  @@map("customer_addresses")
 }
 
 model Category {

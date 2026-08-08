@@ -21,7 +21,7 @@ export function CategoryForm({ category }: { category?: CategoryValue }) {
 
   return (
     <form action={formAction} className="space-y-5 rounded-2xl border border-black/8 bg-white p-5 shadow-sm sm:p-7">
-      <AdminFormAlert message={state.message} />
+      <AdminFormAlert message={state.message} trigger={state} />
       <label className="block text-sm font-normal">
         Nome<RequiredMark />
         <input className={adminInputClassName} defaultValue={category?.name} maxLength={80} name="name" placeholder="Ex.: Roupas" required />

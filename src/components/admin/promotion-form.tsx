@@ -34,7 +34,7 @@ export function PromotionForm({ promotion, products, categories }: PromotionForm
 
   return (
     <form action={formAction} className="space-y-7">
-      <AdminFormAlert message={state.message} />
+      <AdminFormAlert message={state.message} trigger={state} />
 
       <section className="rounded-2xl border border-black/8 bg-white p-5 shadow-sm sm:p-7">
         <h2 className="text-lg font-black">Dados da promoção</h2>

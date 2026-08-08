@@ -20,26 +20,6 @@ function ArrowIcon() {
   );
 }
 
-function HeroArtwork() {
-  return (
-    <div className="relative mx-auto h-[360px] w-full max-w-md sm:h-[480px]">
-      <div className="absolute left-1/2 top-1/2 size-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-domary-yellow sm:size-80" />
-      <div className="absolute left-[10%] top-[14%] size-20 rounded-full border-[14px] border-white/10 sm:size-28" />
-      <div className="absolute bottom-[8%] right-[8%] h-24 w-24 rotate-12 border-[18px] border-domary-yellow-light/20 sm:h-32 sm:w-32" />
-      <svg aria-label="Ilustração de look Domary" className="absolute inset-0 h-full w-full drop-shadow-[0_30px_30px_rgba(0,0,0,0.35)]" role="img" viewBox="0 0 380 500">
-        <circle cx="190" cy="78" fill="#D7A17A" r="42" />
-        <path d="M149 68c5-47 82-59 91 0-18-5-25-14-32-28-15 17-35 26-59 28Z" fill="#111" />
-        <path d="m134 124 56-25 56 25 42 125-44 15-13-52 13 232H136l13-232-13 52-44-15 42-125Z" fill="#171717" />
-        <path d="M134 124c35 31 78 31 112 0" fill="none" stroke="#F5C400" strokeWidth="8" />
-        <path d="M153 241h74" stroke="#F5C400" strokeWidth="12" />
-        <path d="M163 444v44m54-44v44" stroke="#D7A17A" strokeLinecap="round" strokeWidth="24" />
-        <path d="M135 488h44m22 0h44" stroke="#F8F7F2" strokeLinecap="round" strokeWidth="16" />
-      </svg>
-      <div className="absolute bottom-8 left-0 rotate-[-7deg] rounded-full bg-white px-4 py-2 text-xs font-semibold tracking-wide shadow-xl sm:left-4 sm:text-sm">NOVA COLEÇÃO ✦</div>
-    </div>
-  );
-}
-
 export default async function Home() {
   const user = await getCurrentUser();
   const now = new Date();
@@ -111,9 +91,18 @@ export default async function Home() {
 
   return (
     <>
-      <section id="novidades" className="overflow-hidden bg-domary-black text-white">
-        <div className="mx-auto grid min-h-[650px] max-w-7xl items-center gap-6 px-4 py-14 sm:px-6 md:grid-cols-[1.05fr_0.95fr] md:py-20 lg:px-8">
-          <div className="relative z-10">
+      <section id="novidades" className="relative isolate overflow-hidden bg-domary-black text-white">
+        <div aria-hidden="true" className="absolute inset-0">
+          <picture className="block size-full">
+            <source media="(prefers-reduced-motion: reduce)" srcSet="/media/domary-sport-hero-v2.webp" />
+            <img alt="" className="size-full object-cover object-[68%_center] sm:object-[64%_center]" decoding="async" fetchPriority="high" src="/media/domary-sport-hero-v2.gif" />
+          </picture>
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,8,8,0.98)_0%,rgba(8,8,8,0.9)_32%,rgba(8,8,8,0.52)_58%,rgba(8,8,8,0.08)_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/45 to-transparent" />
+        </div>
+
+        <div className="relative mx-auto flex min-h-[650px] max-w-7xl items-center px-4 py-14 sm:min-h-[720px] sm:px-6 sm:py-20 lg:px-8">
+          <div className="max-w-3xl">
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-2 text-[10px] font-bold tracking-[0.18em] uppercase sm:text-xs">
               <span className="size-2 rounded-full bg-domary-yellow" />
               Drop 01 — Essenciais urbanos
@@ -133,8 +122,6 @@ export default async function Home() {
               </Link>
             </div>
           </div>
-
-          <HeroArtwork />
         </div>
       </section>
 

@@ -6,9 +6,10 @@ import { prisma } from "@/lib/prisma";
 
 export default async function AccountPage() {
   const user = await requireCurrentUser("/account");
-  const [orderCount, favoriteCount, recentOrders] = await Promise.all([
+  const [orderCount, favoriteCount, addressCount, recentOrders] = await Promise.all([
     prisma.order.count({ where: { userId: user.id } }),
     prisma.favorite.count({ where: { userId: user.id } }),
+    prisma.customerAddress.count({ where: { userId: user.id } }),
     prisma.order.findMany({
       where: { userId: user.id },
       select: { number: true, status: true, total: true, createdAt: true },
@@ -23,7 +24,7 @@ export default async function AccountPage() {
         {[
           { label: "Pedidos", value: orderCount, href: "/account/orders" },
           { label: "Favoritos", value: favoriteCount, href: "/account/favorites" },
-          { label: "Perfil", value: user.phone ? "Completo" : "Pendente", href: "/account/profile" },
+          { label: "Perfil", value: user.phone && user.cpf && user.birthDate && addressCount ? "Completo" : "Pendente", href: "/account/profile" },
         ].map((item) => (
           <Link className="focus-ring rounded-3xl border border-black/8 bg-white p-5 transition hover:-translate-y-0.5 hover:border-domary-yellow" href={item.href} key={item.label}>
             <p className="text-xs font-black tracking-wider text-black/40 uppercase">{item.label}</p>

@@ -13,7 +13,7 @@ export function RegisterForm() {
 
   return (
     <form action={formAction} className="space-y-5">
-      <FormAlert message={state.message} />
+      <FormAlert message={state.message} trigger={state} />
 
       <div>
         <label className="text-sm font-normal" htmlFor="register-name">Nome<RequiredMark /></label>

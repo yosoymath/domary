@@ -24,7 +24,7 @@ export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
   return (
     <form action={formAction} className="space-y-5" onKeyDown={handleEnterSubmit}>
       <input name="callbackUrl" type="hidden" value={callbackUrl} />
-      <FormAlert message={state.message} />
+      <FormAlert message={state.message} trigger={state} />
 
       <div>
         <label className="text-sm font-normal" htmlFor="login-email">E-mail<RequiredMark /></label>

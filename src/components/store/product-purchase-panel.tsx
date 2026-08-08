@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useToast } from "@/components/ui/toast";
 import { RequiredMark } from "@/components/ui/required-mark";
 import { readCart, writeCart } from "@/lib/cart";
 
@@ -32,13 +33,12 @@ function colorKey(variant: ProductVariantOption) {
 }
 
 export function ProductPurchasePanel({ product, variants }: ProductPurchasePanelProps) {
+  const { showToast } = useToast();
   const firstAvailable = variants.find((variant) => variant.stockQuantity > 0);
   const [selectedColorKey, setSelectedColorKey] = useState(() => firstAvailable ? colorKey(firstAvailable) : variants[0] ? colorKey(variants[0]) : "__sem-cor__");
   const [selectedId, setSelectedId] = useState(firstAvailable?.id ?? "");
   const [quantity, setQuantity] = useState(1);
-  const [message, setMessage] = useState<string>();
   const [cep, setCep] = useState("");
-  const [shippingMessage, setShippingMessage] = useState<string>();
   const selectedVariant = useMemo(() => variants.find((variant) => variant.id === selectedId), [selectedId, variants]);
   const colors = useMemo(() => {
     const uniqueColors = new Map<string, { key: string; name: string | null; hex: string | null; available: boolean }>();
@@ -62,7 +62,6 @@ export function ProductPurchasePanel({ product, variants }: ProductPurchasePanel
   function selectVariant(id: string) {
     setSelectedId(id);
     setQuantity(1);
-    setMessage(undefined);
   }
 
   function selectColor(key: string) {
@@ -75,7 +74,7 @@ export function ProductPurchasePanel({ product, variants }: ProductPurchasePanel
 
   function addToCart() {
     if (!selectedVariant || selectedVariant.stockQuantity <= 0) {
-      setMessage("Selecione uma opção disponível.");
+      showToast({ message: "Selecione uma opção disponível.", variant: "error" });
       return;
     }
 
@@ -101,13 +100,17 @@ export function ProductPurchasePanel({ product, variants }: ProductPurchasePanel
     }
 
     writeCart(cart);
-    setMessage(nextQuantity === currentQuantity ? "Todo o estoque disponível já está no carrinho." : "Produto adicionado ao carrinho.");
+    showToast(nextQuantity === currentQuantity
+      ? { message: "Todo o estoque disponível já está no carrinho.", variant: "warning" }
+      : { message: "Produto adicionado ao carrinho.", variant: "success" });
   }
 
   function calculateShipping(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const digits = cep.replace(/\D/g, "");
-    setShippingMessage(digits.length === 8 ? "Frete grátis na simulação · entrega estimada em 4 a 8 dias úteis." : "Informe um CEP com 8 números.");
+    showToast(digits.length === 8
+      ? { title: "Frete calculado", message: "Frete grátis na simulação · entrega estimada em 4 a 8 dias úteis.", variant: "success" }
+      : { message: "Informe um CEP com 8 números.", variant: "error" });
   }
 
   return (
@@ -188,15 +191,12 @@ export function ProductPurchasePanel({ product, variants }: ProductPurchasePanel
       <button className="focus-ring mt-4 min-h-14 w-full rounded-full bg-domary-yellow px-6 text-sm font-semibold text-domary-black transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-black/10 disabled:text-black/35" disabled={!totalStock} onClick={addToCart} type="button">
         {totalStock ? "Adicionar ao carrinho" : "Produto esgotado"}
       </button>
-      <p aria-live="polite" className={`mt-3 min-h-5 text-center text-xs font-bold ${message?.includes("adicionado") ? "text-emerald-700" : "text-red-600"}`}>{message}</p>
-
       <form className="mt-5 border-t border-black/10 pt-5" onSubmit={calculateShipping}>
         <div className="flex items-center justify-between gap-3"><label className="text-sm font-normal" htmlFor="shipping-cep">Calcular frete</label><span className="text-[10px] font-semibold tracking-wide text-emerald-700 uppercase">Simulação</span></div>
         <div className="mt-3 flex gap-2">
           <input className="focus-ring min-h-12 min-w-0 flex-1 rounded-xl border border-black/15 bg-white px-4 text-sm" id="shipping-cep" inputMode="numeric" maxLength={9} onChange={(event) => setCep(event.target.value)} placeholder="00000-000" value={cep} />
           <button className="focus-ring rounded-xl border border-black px-4 text-xs font-semibold" type="submit">Calcular</button>
         </div>
-        <p aria-live="polite" className="mt-2 min-h-5 text-xs font-semibold text-black/55">{shippingMessage}</p>
       </form>
 
       <div className="mt-4 divide-y divide-black/10 border-y border-black/10">

@@ -10,17 +10,22 @@ export const getCurrentUser = cache(async () => {
 
   if (!session?.user?.id) return null;
 
-  return prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: {
       id: true,
       name: true,
       email: true,
       phone: true,
+      cpf: true,
+      birthDate: true,
+      gender: true,
       role: true,
       createdAt: true,
     },
   });
+
+  return user;
 });
 
 export async function requireCurrentUser(callbackUrl = "/account") {
