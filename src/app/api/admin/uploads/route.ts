@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { v2 as cloudinary, type UploadApiResponse } from "cloudinary";
 import sharp from "sharp";
 import { getCurrentUser } from "@/lib/auth/current-user";
 
@@ -46,12 +45,50 @@ function jsonError(message: string, status: number) {
   return Response.json({ message }, { status, headers: { "Cache-Control": "no-store" } });
 }
 
+function hasCloudinaryCredentials() {
+  const configuration = cloudinary.config();
+
+  return Boolean(configuration.cloud_name && configuration.api_key && configuration.api_secret);
+}
+
+function uploadProductImage(image: Buffer, publicId: string) {
+  return new Promise<UploadApiResponse>((resolve, reject) => {
+    const upload = cloudinary.uploader.upload_stream(
+      {
+        folder: "domary/products",
+        public_id: publicId,
+        resource_type: "image",
+        format: "webp",
+        overwrite: false,
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        if (!result?.secure_url) {
+          reject(new Error("O Cloudinary não retornou a URL segura da imagem."));
+          return;
+        }
+
+        resolve(result);
+      },
+    );
+
+    upload.end(image);
+  });
+}
+
 export async function POST(request: Request) {
   if (!sameOrigin(request)) return jsonError("Origem da requisição não autorizada.", 403);
 
   const user = await getCurrentUser();
   if (!user) return jsonError("Faça login para enviar imagens.", 401);
   if (user.role !== "ADMIN") return jsonError("Apenas administradores podem enviar imagens.", 403);
+  if (!hasCloudinaryCredentials()) {
+    return jsonError("O armazenamento de imagens ainda não está configurado.", 503);
+  }
 
   const contentLength = Number(request.headers.get("content-length") ?? 0);
   if (contentLength > MAX_REQUEST_SIZE) return jsonError("A imagem deve ter no máximo 5 MB.", 413);
@@ -89,26 +126,25 @@ export async function POST(request: Request) {
     return jsonError("A imagem está corrompida ou não pôde ser processada.", 422);
   }
 
-  // Armazenamento persistente para desenvolvimento e servidores tradicionais.
-  // Em ambientes serverless, substitua somente este bloco por S3/Cloudinary.
-  const uploadDirectory = path.join(process.cwd(), "public", "uploads", "products");
-  const fileName = `${randomUUID()}.webp`;
-  const destination = path.join(uploadDirectory, fileName);
-
+  const publicId = randomUUID();
+  let uploadedImage: UploadApiResponse;
   try {
-    await mkdir(uploadDirectory, { recursive: true });
-    await writeFile(destination, normalizedImage, { flag: "wx" });
+    uploadedImage = await uploadProductImage(normalizedImage, publicId);
   } catch (error) {
-    console.error("Falha ao armazenar imagem de produto", error);
+    console.error(
+      "Falha ao armazenar imagem de produto no Cloudinary",
+      error instanceof Error ? error.message : "Erro desconhecido",
+    );
     return jsonError("Não foi possível armazenar a imagem agora.", 500);
   }
 
   return Response.json(
     {
-      url: `/uploads/products/${fileName}`,
+      url: uploadedImage.secure_url,
+      publicId: uploadedImage.public_id,
       mimeType: "image/webp",
-      width: PRODUCT_IMAGE_SIZE,
-      height: PRODUCT_IMAGE_SIZE,
+      width: uploadedImage.width ?? PRODUCT_IMAGE_SIZE,
+      height: uploadedImage.height ?? PRODUCT_IMAGE_SIZE,
     },
     { status: 201, headers: { "Cache-Control": "no-store" } },
   );

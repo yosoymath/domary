@@ -9,12 +9,14 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "migrate:product-images": "node --env-file=.env scripts/migrate-product-images-to-cloudinary.mjs"
   },
   "dependencies": {
     "@prisma/client": "6.19.3",
     "@react-email/render": "^2.1.0",
     "bcryptjs": "3.0.3",
+    "cloudinary": "^2.10.0",
     "next": "16.3.0",
     "next-auth": "5.0.0-beta.32",
     "react": "19.2.8",
