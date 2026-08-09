@@ -1,0 +1,143 @@
+.section {
+  background: #111111;
+  color: #ffffff;
+  overflow: hidden;
+  padding-block: 2.75rem;
+}
+
+.eyebrow {
+  color: #f5c400;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  margin: 0 0 0.65rem;
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: clamp(1.65rem, 4vw, 2.6rem);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.viewport {
+  margin-top: 2rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.viewport::before,
+.viewport::after {
+  content: "";
+  inset-block: 0;
+  pointer-events: none;
+  position: absolute;
+  width: min(10vw, 7rem);
+  z-index: 2;
+}
+
+.viewport::before {
+  background: linear-gradient(90deg, #111111, transparent);
+  left: 0;
+}
+
+.viewport::after {
+  background: linear-gradient(270deg, #111111, transparent);
+  right: 0;
+}
+
+.track {
+  animation: brand-marquee 46s linear infinite;
+  display: flex;
+  width: max-content;
+}
+
+.viewport:hover .track {
+  animation-play-state: paused;
+}
+
+.group {
+  align-items: stretch;
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.brand {
+  align-items: center;
+  background: #1b1b1b;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 999px;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.7rem;
+  min-height: 4.5rem;
+  padding: 0.8rem 1.4rem;
+  white-space: nowrap;
+}
+
+.mark {
+  align-items: center;
+  background: #f5c400;
+  border-radius: 50%;
+  color: #111111;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  font-weight: 950;
+  height: 2rem;
+  justify-content: center;
+  letter-spacing: -0.06em;
+  width: 2rem;
+}
+
+.name {
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.detail {
+  color: rgb(255 255 255 / 50%);
+  display: block;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  margin-top: 0.35rem;
+  text-transform: uppercase;
+}
+
+.provisional {
+  border-color: rgb(245 196 0 / 42%);
+}
+
+.provisional .detail {
+  color: #f5c400;
+}
+
+@keyframes brand-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+
+  .viewport {
+    overflow-x: auto;
+    scrollbar-color: #f5c400 #292929;
+  }
+
+  .group:last-child {
+    display: none;
+  }
+}

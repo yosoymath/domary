@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Prisma } from "@prisma/client";
 import { ProductCard } from "@/components/store/product-card";
+import { BrandMarquee } from "@/components/store/brand-marquee";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatCurrency } from "@/lib/formatters";
 import { prisma } from "@/lib/prisma";
@@ -174,6 +175,8 @@ export default async function Home() {
         </div>
       </section>
 
+      <BrandMarquee />
+
       <section id="produtos" className="bg-white">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <div className="mb-10 flex items-end justify-between gap-6">
@@ -199,7 +202,7 @@ export default async function Home() {
           <p className="mt-4 max-w-xl text-sm leading-6 text-black/65">Receba lançamentos, ofertas exclusivas e conteúdo Domary direto no seu e-mail.</p>
           <form className="mt-8 flex w-full max-w-xl flex-col gap-2 sm:flex-row">
             <label className="sr-only" htmlFor="newsletter-email">Seu melhor e-mail</label>
-            <input className="focus-ring min-h-14 flex-1 rounded-full border-2 border-black bg-white px-6 text-sm placeholder:text-black/40" id="newsletter-email" name="email" placeholder="Seu melhor e-mail" type="email" />
+            <input className="focus-ring min-h-14 flex-1 rounded-full border-2 border-[#111111] bg-[#ffffff] px-6 text-sm text-[#111111] placeholder:text-[#111111]/40" id="newsletter-email" name="email" placeholder="Seu melhor e-mail" type="email" />
             <button className="focus-ring min-h-14 rounded-full bg-domary-black px-7 text-sm font-black text-white transition-transform hover:-translate-y-0.5" type="submit">Quero receber</button>
           </form>
         </div>

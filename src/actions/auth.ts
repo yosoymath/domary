@@ -10,7 +10,7 @@ import { sendWelcomeEmail } from "@/lib/email/send-welcome-email";
 import { prisma } from "@/lib/prisma";
 import { loginSchema, registerSchema } from "@/lib/validations/auth";
 
-type RegisterField = "name" | "email" | "password";
+type RegisterField = "name" | "email" | "password" | "confirmPassword";
 type LoginField = "email" | "password";
 
 export type RegisterActionState = {
@@ -40,6 +40,7 @@ export async function register(
     name: formValue(formData, "name"),
     email: formValue(formData, "email"),
     password: formValue(formData, "password"),
+    confirmPassword: formValue(formData, "confirmPassword"),
   });
 
   if (!parsed.success) {

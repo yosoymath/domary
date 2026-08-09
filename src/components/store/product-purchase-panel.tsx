@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useToast } from "@/components/ui/toast";
 import { RequiredMark } from "@/components/ui/required-mark";
 import { readCart, writeCart } from "@/lib/cart";
+import { formatPostalCode } from "@/lib/masks";
 
 type ProductVariantOption = {
   id: string;
@@ -14,6 +15,7 @@ type ProductVariantOption = {
 };
 
 type ProductPurchasePanelProps = {
+  initialPostalCode?: string;
   product: {
     id: string;
     slug: string;
@@ -32,13 +34,14 @@ function colorKey(variant: ProductVariantOption) {
   return variant.color?.trim().toLocaleLowerCase("pt-BR") || "__sem-cor__";
 }
 
-export function ProductPurchasePanel({ product, variants }: ProductPurchasePanelProps) {
+export function ProductPurchasePanel({ initialPostalCode, product, variants }: ProductPurchasePanelProps) {
   const { showToast } = useToast();
+  const sizeGuideRef = useRef<HTMLDialogElement>(null);
   const firstAvailable = variants.find((variant) => variant.stockQuantity > 0);
   const [selectedColorKey, setSelectedColorKey] = useState(() => firstAvailable ? colorKey(firstAvailable) : variants[0] ? colorKey(variants[0]) : "__sem-cor__");
   const [selectedId, setSelectedId] = useState(firstAvailable?.id ?? "");
   const [quantity, setQuantity] = useState(1);
-  const [cep, setCep] = useState("");
+  const [cep, setCep] = useState(() => formatPostalCode(initialPostalCode ?? ""));
   const selectedVariant = useMemo(() => variants.find((variant) => variant.id === selectedId), [selectedId, variants]);
   const colors = useMemo(() => {
     const uniqueColors = new Map<string, { key: string; name: string | null; hex: string | null; available: boolean }>();
@@ -153,7 +156,13 @@ export function ProductPurchasePanel({ product, variants }: ProductPurchasePanel
             <p className="text-sm font-normal">Tamanho<RequiredMark /></p>
             <p className="mt-1 text-xs text-black/45">Selecione o tamanho desejado.</p>
           </div>
-          <button className="focus-ring shrink-0 text-xs font-bold underline underline-offset-4" type="button">Guia de medidas</button>
+          <button
+            className="focus-ring shrink-0 text-xs font-bold underline decoration-domary-yellow decoration-2 underline-offset-4 hover:text-black/60"
+            onClick={() => sizeGuideRef.current?.showModal()}
+            type="button"
+          >
+            Guia de medidas
+          </button>
         </div>
 
         <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-5 lg:grid-cols-4 xl:grid-cols-5">
@@ -175,6 +184,12 @@ export function ProductPurchasePanel({ product, variants }: ProductPurchasePanel
             );
           })}
         </div>
+        {selectedVariant && selectedVariant.stockQuantity > 0 && selectedVariant.stockQuantity < 5 ? (
+          <p aria-live="polite" className="mt-3 flex items-center gap-2 text-xs font-bold text-red-600">
+            <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-red-600" />
+            Últimas unidades: restam apenas {selectedVariant.stockQuantity} {selectedVariant.stockQuantity === 1 ? "peça" : "peças"} neste tamanho.
+          </p>
+        ) : null}
       </div>
 
       {selectedVariant && selectedVariant.stockQuantity > 0 ? (
@@ -194,7 +209,17 @@ export function ProductPurchasePanel({ product, variants }: ProductPurchasePanel
       <form className="mt-5 border-t border-black/10 pt-5" onSubmit={calculateShipping}>
         <div className="flex items-center justify-between gap-3"><label className="text-sm font-normal" htmlFor="shipping-cep">Calcular frete</label><span className="text-[10px] font-semibold tracking-wide text-emerald-700 uppercase">Simulação</span></div>
         <div className="mt-3 flex gap-2">
-          <input className="focus-ring min-h-12 min-w-0 flex-1 rounded-xl border border-black/15 bg-white px-4 text-sm" id="shipping-cep" inputMode="numeric" maxLength={9} onChange={(event) => setCep(event.target.value)} placeholder="00000-000" value={cep} />
+          <input
+            autoComplete="postal-code"
+            className="focus-ring min-h-12 min-w-0 flex-1 rounded-xl border border-black/15 bg-white px-4 text-sm"
+            id="shipping-cep"
+            inputMode="numeric"
+            maxLength={9}
+            name="postalCode"
+            onChange={(event) => setCep(formatPostalCode(event.target.value))}
+            placeholder="00000-000"
+            value={cep}
+          />
           <button className="focus-ring rounded-xl border border-black px-4 text-xs font-semibold" type="submit">Calcular</button>
         </div>
       </form>
@@ -203,6 +228,87 @@ export function ProductPurchasePanel({ product, variants }: ProductPurchasePanel
         <details className="group py-4"><summary className="focus-ring flex cursor-pointer list-none items-center justify-between text-sm font-semibold">Entrega e devoluções <span className="text-xl font-light group-open:rotate-45">+</span></summary><p className="pt-3 text-xs leading-5 text-black/55">Envio para todo o Brasil e troca facilitada em até 30 dias após o recebimento.</p></details>
         <details className="group py-4"><summary className="focus-ring flex cursor-pointer list-none items-center justify-between text-sm font-semibold">Cuidados com a peça <span className="text-xl font-light group-open:rotate-45">+</span></summary><p className="pt-3 text-xs leading-5 text-black/55">Siga as instruções da etiqueta para preservar cores, tecido e acabamento por mais tempo.</p></details>
       </div>
+
+      <dialog
+        aria-labelledby="size-guide-title"
+        className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl overflow-hidden rounded-[1.75rem] bg-white p-0 text-black shadow-2xl backdrop:bg-black/65 backdrop:backdrop-blur-sm"
+        onClick={(event) => {
+          if (event.target === event.currentTarget) event.currentTarget.close();
+        }}
+        ref={sizeGuideRef}
+      >
+        <div className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
+          <div className="sticky top-0 z-10 flex items-start justify-between gap-5 border-b border-black/10 bg-white px-5 py-5 sm:px-7">
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] text-black/40 uppercase">Encontre o tamanho ideal</p>
+              <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] uppercase" id="size-guide-title">Guia de medidas</h2>
+            </div>
+            <button
+              aria-label="Fechar guia de medidas"
+              autoFocus
+              className="focus-ring grid size-10 shrink-0 place-items-center rounded-full bg-black/[0.055] text-xl leading-none hover:bg-domary-yellow"
+              onClick={() => sizeGuideRef.current?.close()}
+              type="button"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="px-5 py-6 sm:px-7">
+            <p className="text-sm leading-6 text-black/60">
+              Meça o corpo mantendo a fita paralela ao chão, sem apertar. Compare as medidas em centímetros com a tabela abaixo.
+            </p>
+
+            <div className="mt-5 overflow-x-auto rounded-2xl border border-black/10">
+              <table className="w-full min-w-[500px] border-collapse text-left text-sm">
+                <thead className="bg-domary-black text-white">
+                  <tr>
+                    <th className="px-4 py-3 font-semibold">Tamanho</th>
+                    <th className="px-4 py-3 font-semibold">Tórax</th>
+                    <th className="px-4 py-3 font-semibold">Cintura</th>
+                    <th className="px-4 py-3 font-semibold">Quadril</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-black/8">
+                  {[
+                    ["PP", "84–88", "70–74", "86–90"],
+                    ["P", "89–96", "75–82", "91–98"],
+                    ["M", "97–104", "83–90", "99–106"],
+                    ["G", "105–112", "91–98", "107–114"],
+                    ["GG", "113–120", "99–106", "115–122"],
+                    ["XGG", "121–128", "107–114", "123–130"],
+                  ].map(([size, chest, waist, hip]) => (
+                    <tr className="odd:bg-black/[0.018]" key={size}>
+                      <th className="px-4 py-3.5 font-black">{size}</th>
+                      <td className="px-4 py-3.5 text-black/65">{chest} cm</td>
+                      <td className="px-4 py-3.5 text-black/65">{waist} cm</td>
+                      <td className="px-4 py-3.5 text-black/65">{hip} cm</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              {[
+                ["01", "Tórax", "Contorne a parte mais larga do peito."],
+                ["02", "Cintura", "Meça a região mais estreita do tronco."],
+                ["03", "Quadril", "Contorne a parte mais larga do quadril."],
+              ].map(([number, title, description]) => (
+                <div className="rounded-2xl bg-black/[0.035] p-4" key={number}>
+                  <span className="text-xs font-black text-domary-yellow">{number}</span>
+                  <h3 className="mt-2 text-sm font-bold">{title}</h3>
+                  <p className="mt-1 text-xs leading-5 text-black/50">{description}</p>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-5 text-xs leading-5 text-black/45">
+              As medidas são orientativas e podem variar conforme a modelagem e a marca. Em caso de dúvida entre dois tamanhos, prefira o maior.
+            </p>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 }

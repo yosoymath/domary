@@ -48,7 +48,7 @@ export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
       <div>
         <div className="flex items-center justify-between gap-4">
           <label className="text-sm font-normal" htmlFor="login-password">Senha<RequiredMark /></label>
-          <span className="text-xs text-white/30">Esqueci minha senha</span>
+          <span className="text-xs text-black/35">Esqueci minha senha</span>
         </div>
         <input
           aria-describedby={state.fieldErrors?.password ? "login-password-error" : undefined}
@@ -68,7 +68,7 @@ export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
         {pending ? "Entrando..." : "Entrar na minha conta"}
       </button>
 
-      <p className="text-center text-sm text-white/45">
+      <p className="text-center text-sm text-black/45">
         Ainda não tem conta?{" "}
         <Link className="focus-ring font-bold text-domary-yellow hover:underline" href="/register">Cadastre-se</Link>
       </p>

@@ -101,7 +101,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const pricing = productPricing(product);
   const productPath = `/produtos/${product.slug}`;
-  const [favorite, relatedProducts] = await Promise.all([
+  const [favorite, relatedProducts, savedAddress] = await Promise.all([
     user ? prisma.favorite.findUnique({ where: { userId_productId: { userId: user.id, productId: product.id } }, select: { id: true } }) : null,
     prisma.product.findMany({
       where: { status: "ACTIVE", categoryId: product.categoryId, id: { not: product.id } },
@@ -119,6 +119,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
       orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
       take: 4,
     }),
+    user ? prisma.customerAddress.findFirst({
+      where: { userId: user.id },
+      orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+      select: { postalCode: true },
+    }) : null,
   ]);
   const relatedFavoriteIds = user && relatedProducts.length
     ? new Set((await prisma.favorite.findMany({ where: { userId: user.id, productId: { in: relatedProducts.map((item) => item.id) } }, select: { productId: true } })).map((item) => item.productId))
@@ -172,6 +177,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <p className={`mt-4 text-xs font-semibold ${totalStock > 0 ? "text-emerald-700" : "text-red-600"}`}>{totalStock > 0 ? `${totalStock} unidades disponíveis` : "Indisponível no momento"}</p>
 
             <ProductPurchasePanel
+              initialPostalCode={savedAddress?.postalCode}
               product={{ id: product.id, slug: product.slug, name: product.name, imageUrl: product.images[0]?.url, unitPrice: pricing.price }}
               variants={product.variants.map((variant) => ({ id: variant.id, size: variant.size, color: variant.color, colorHex: variant.colorHex, stockQuantity: variant.stockQuantity }))}
             />

@@ -185,9 +185,9 @@ export function ProductVariantEditor({ errors, initialVariants }: ProductVariant
     }));
   }
 
-  function changeStock(sizeId: string, colorId: string, value: string) {
+  function changeStock(key: string, value: string) {
     const quantity = Math.min(1_000_000, Math.max(0, Number.parseInt(value || "0", 10) || 0));
-    setEditor((current) => ({ ...current, stocks: { ...current.stocks, [stockKey(sizeId, colorId)]: quantity } }));
+    setEditor((current) => ({ ...current, stocks: { ...current.stocks, [key]: quantity } }));
   }
 
   const variants = editor.sizes.flatMap((size) => editor.colors.map((color) => ({
@@ -324,20 +324,37 @@ export function ProductVariantEditor({ errors, initialVariants }: ProductVariant
           <span>Tamanho</span><span>Cor</span><span>Estoque</span>
         </div>
         <div className="divide-y divide-black/6">
-          {editor.sizes.flatMap((size) => editor.colors.map((color) => (
-            <div className="grid grid-cols-[minmax(0,1fr)_110px] items-center gap-3 px-4 py-3 sm:grid-cols-[minmax(100px,0.7fr)_minmax(160px,1fr)_140px] sm:gap-4 sm:px-5" key={stockKey(size.id, color.id)}>
-              <span className="text-xs font-normal sm:text-sm">{size.label}</span>
-              <span className="hidden min-w-0 items-center gap-2 text-xs sm:flex">
-                <span className="size-5 shrink-0 rounded-full border border-black/10" style={{ backgroundColor: color.hex ?? "transparent" }} />
-                <span className="truncate">{color.name ?? "Sem cor"}</span>
-              </span>
-              <label className="flex items-center rounded-xl border border-black/10 bg-white px-3 focus-within:border-domary-yellow">
-                <input aria-label={`Estoque do tamanho ${size.label}, cor ${color.name ?? "sem cor"}`} className="min-h-10 min-w-0 w-full bg-transparent text-right text-sm font-normal outline-none" inputMode="numeric" max="1000000" min="0" onChange={(event) => changeStock(size.id, color.id, event.target.value)} type="number" value={editor.stocks[stockKey(size.id, color.id)] ?? 0} />
-                <span className="ml-1 text-[10px] text-black/30">un.</span>
-              </label>
-              <span className="col-span-2 -mt-2 text-[10px] text-black/40 sm:hidden">{color.name ?? "Sem cor"}</span>
-            </div>
-          ))) }
+          {editor.sizes.flatMap((size) => editor.colors.map((color) => {
+            const key = stockKey(size.id, color.id);
+            const inputId = `stock-${size.id}-${color.id}`;
+
+            return (
+              <div className="grid grid-cols-[minmax(0,1fr)_110px] items-center gap-3 px-4 py-3 sm:grid-cols-[minmax(100px,0.7fr)_minmax(160px,1fr)_140px] sm:gap-4 sm:px-5" key={key}>
+                <span className="text-xs font-normal sm:text-sm">{size.label}</span>
+                <span className="hidden min-w-0 items-center gap-2 text-xs sm:flex">
+                  <span className="size-5 shrink-0 rounded-full border border-black/10" style={{ backgroundColor: color.hex ?? "transparent" }} />
+                  <span className="truncate">{color.name ?? "Sem cor"}</span>
+                </span>
+                <label className="flex items-center rounded-xl border border-black/10 bg-white px-3 focus-within:border-domary-yellow" htmlFor={inputId}>
+                  <input
+                    aria-label={`Estoque do tamanho ${size.label}, cor ${color.name ?? "sem cor"}`}
+                    autoComplete="off"
+                    className="min-h-10 min-w-0 w-full bg-transparent text-right text-sm font-normal outline-none"
+                    id={inputId}
+                    inputMode="numeric"
+                    max="1000000"
+                    min="0"
+                    name={`stock[${key}]`}
+                    onChange={(event) => changeStock(key, event.target.value)}
+                    type="number"
+                    value={editor.stocks[key] ?? 0}
+                  />
+                  <span className="ml-1 text-[10px] text-black/30">un.</span>
+                </label>
+                <span className="col-span-2 -mt-2 text-[10px] text-black/40 sm:hidden">{color.name ?? "Sem cor"}</span>
+              </div>
+            );
+          }))}
         </div>
       </div>
 
