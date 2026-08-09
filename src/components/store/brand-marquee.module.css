@@ -176,14 +176,6 @@
   text-transform: uppercase;
 }
 
-.provisional {
-  border-color: rgb(245 196 0 / 42%);
-}
-
-.provisional .detail {
-  color: #f5c400;
-}
-
 @media (max-width: 639px) {
   .section {
     padding-block: 2.25rem;

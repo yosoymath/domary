@@ -7,7 +7,6 @@ type Brand = {
   name: string;
   detail?: string;
   logo?: string;
-  provisional?: boolean;
 };
 
 const brands: readonly Brand[] = [
@@ -35,14 +34,14 @@ const brands: readonly Brand[] = [
   {
     name: "Resumo",
     detail: "Jeans & Alfaiataria",
-    logo: "/media/brands/resumo.webp",
+    logo: "/media/brands/resumo.jpg",
   },
   { name: "Lopper", detail: "Jeans", logo: "/media/brands/loopper.png" },
   { name: "Ognus", detail: "Jeans", logo: "/media/brands/ognus.png" },
   { name: "Sallo", logo: "/media/brands/sallo-seeklogo.png" },
   { name: "D&0" },
   { name: "Savelli", detail: "Calçados", logo: "/media/brands/savelli.jpg" },
-  { name: "Domary", detail: "Calçados", provisional: true },
+  { name: "Domary", detail: "Calçados", logo: "/media/brands/domary.png" },
   {
     name: "Diamantes",
     detail: "Lingerie",
@@ -56,7 +55,7 @@ function BrandGroup({ hidden = false }: { hidden?: boolean }) {
       {brands.map((brand) => (
         <div
           aria-label={`${brand.name}${brand.detail ? ` ${brand.detail}` : ""}`}
-          className={`${styles.brand} ${brand.logo ? styles.brandWithLogo : ""} ${brand.provisional ? styles.provisional : ""}`}
+          className={`${styles.brand} ${brand.logo ? styles.brandWithLogo : ""}`}
           key={`${brand.name}-${brand.detail ?? "marca"}`}
         >
           {brand.logo ? (
