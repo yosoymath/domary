@@ -90,6 +90,8 @@ function BrandGroup({ hidden = false }: { hidden?: boolean }) {
 export function BrandMarquee() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const pointerRef = useRef<{ id: number; x: number } | null>(null);
+  const touchingRef = useRef(false);
+  const resumeAutomaticAtRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
 
   function normalizePosition(viewport: HTMLDivElement) {
@@ -111,7 +113,11 @@ export function BrandMarquee() {
     viewport.scrollLeft = viewport.scrollWidth / 2;
 
     const movementInterval = window.setInterval(() => {
-      if (!pointerRef.current) {
+      if (
+        !pointerRef.current &&
+        !touchingRef.current &&
+        Date.now() >= resumeAutomaticAtRef.current
+      ) {
         viewport.scrollLeft += 0.8;
         normalizePosition(viewport);
       }
@@ -122,17 +128,25 @@ export function BrandMarquee() {
 
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
     const viewport = viewportRef.current;
-    if (!viewport) return;
+    if (!viewport || event.pointerType === "touch") return;
+
+    pointerRef.current = {
+      id: event.pointerId,
+      x: event.clientX,
+    };
 
     viewport.setPointerCapture(event.pointerId);
-    pointerRef.current = { id: event.pointerId, x: event.clientX };
     setIsDragging(true);
   }
 
   function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
     const viewport = viewportRef.current;
     const pointer = pointerRef.current;
-    if (!viewport || !pointer || pointer.id !== event.pointerId) return;
+    if (
+      !viewport ||
+      !pointer ||
+      pointer.id !== event.pointerId
+    ) return;
 
     viewport.scrollLeft -= event.clientX - pointer.x;
     pointer.x = event.clientX;
@@ -149,6 +163,24 @@ export function BrandMarquee() {
 
     pointerRef.current = null;
     setIsDragging(false);
+  }
+
+  function handleTouchStart() {
+    touchingRef.current = true;
+    resumeAutomaticAtRef.current = Number.POSITIVE_INFINITY;
+  }
+
+  function handleTouchEnd() {
+    touchingRef.current = false;
+    resumeAutomaticAtRef.current = Date.now() + 600;
+  }
+
+  function handleScroll() {
+    const resumeAt = resumeAutomaticAtRef.current;
+
+    if (resumeAt === Number.POSITIVE_INFINITY || resumeAt > Date.now()) {
+      resumeAutomaticAtRef.current = Date.now() + 350;
+    }
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
@@ -174,8 +206,13 @@ export function BrandMarquee() {
           onKeyDown={handleKeyDown}
           onPointerCancel={finishDragging}
           onPointerDown={handlePointerDown}
+          onLostPointerCapture={finishDragging}
           onPointerMove={handlePointerMove}
           onPointerUp={finishDragging}
+          onScroll={handleScroll}
+          onTouchCancel={handleTouchEnd}
+          onTouchEnd={handleTouchEnd}
+          onTouchStart={handleTouchStart}
           ref={viewportRef}
           role="region"
           tabIndex={0}
