@@ -23,14 +23,21 @@
   text-transform: uppercase;
 }
 
-.viewport {
+.hint {
+  color: rgb(255 255 255 / 55%);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0.75rem 0 0;
+}
+
+.marqueeFrame {
   margin-top: 2rem;
-  overflow: hidden;
   position: relative;
 }
 
-.viewport::before,
-.viewport::after {
+.marqueeFrame::before,
+.marqueeFrame::after {
   content: "";
   inset-block: 0;
   pointer-events: none;
@@ -39,24 +46,44 @@
   z-index: 2;
 }
 
-.viewport::before {
+.marqueeFrame::before {
   background: linear-gradient(90deg, #111111, transparent);
   left: 0;
 }
 
-.viewport::after {
+.marqueeFrame::after {
   background: linear-gradient(270deg, #111111, transparent);
   right: 0;
 }
 
-.track {
-  animation: brand-marquee 46s linear infinite;
-  display: flex;
-  width: max-content;
+.viewport {
+  cursor: grab;
+  overscroll-behavior-inline: contain;
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: relative;
+  scrollbar-width: none;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-overflow-scrolling: touch;
 }
 
-.viewport:hover .track {
-  animation-play-state: paused;
+.viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.viewport:focus-visible {
+  outline: 2px solid #f5c400;
+  outline-offset: -2px;
+}
+
+.dragging {
+  cursor: grabbing;
+}
+
+.track {
+  display: flex;
+  width: max-content;
 }
 
 .group {
@@ -78,6 +105,42 @@
   min-height: 4.5rem;
   padding: 0.8rem 1.4rem;
   white-space: nowrap;
+}
+
+.brandWithLogo {
+  gap: 0.6rem;
+  padding: 0.55rem 0.7rem;
+}
+
+.logoPlate {
+  align-items: center;
+  background: #fff;
+  border-radius: 999px;
+  display: flex;
+  height: 3.35rem;
+  justify-content: center;
+  min-width: 8.5rem;
+  overflow: hidden;
+  padding: 0.45rem 0.85rem;
+  width: 9.5rem;
+}
+
+.logo {
+  display: block;
+  height: 100%;
+  max-height: 2.45rem;
+  max-width: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.logoDetail {
+  color: rgb(255 255 255 / 58%);
+  font-size: 0.57rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  padding-right: 0.45rem;
+  text-transform: uppercase;
 }
 
 .mark {
@@ -121,23 +184,57 @@
   color: #f5c400;
 }
 
-@keyframes brand-marquee {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .track {
-    animation: none;
+@media (max-width: 639px) {
+  .section {
+    padding-block: 2.25rem;
   }
 
-  .viewport {
-    overflow-x: auto;
-    scrollbar-color: #f5c400 #292929;
+  .hint {
+    font-size: 0.68rem;
+    line-height: 1.4;
+    max-width: 18rem;
   }
 
-  .group:last-child {
-    display: none;
+  .marqueeFrame {
+    margin-top: 1.5rem;
+  }
+
+  .marqueeFrame::before,
+  .marqueeFrame::after {
+    width: 1.5rem;
+  }
+
+  .group {
+    gap: 0.55rem;
+    padding-right: 0.55rem;
+  }
+
+  .brand {
+    min-height: 4.85rem;
+  }
+
+  .brandWithLogo {
+    flex-direction: column;
+    gap: 0.25rem;
+    justify-content: center;
+    padding: 0.4rem 0.55rem;
+    width: 9.5rem;
+  }
+
+  .logoPlate {
+    height: 2.9rem;
+    min-width: 0;
+    padding: 0.35rem 0.7rem;
+    width: 8.35rem;
+  }
+
+  .logo {
+    max-height: 2.2rem;
+  }
+
+  .logoDetail {
+    font-size: 0.49rem;
+    line-height: 1;
+    padding-right: 0;
   }
 }
