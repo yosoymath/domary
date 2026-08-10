@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { toggleFavorite } from "@/actions/account";
+import { ProductImageGallery } from "@/components/store/product-image-gallery";
 import { ProductCard } from "@/components/store/product-card";
 import { ProductPurchasePanel } from "@/components/store/product-purchase-panel";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -143,15 +144,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <section className="bg-white">
         <div className="mx-auto grid max-w-7xl min-w-0 gap-8 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(20rem,0.7fr)] lg:gap-10 lg:px-8 lg:py-10">
           <div className="min-w-0">
-            <div className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-3 sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-2 lg:overflow-visible lg:px-0 lg:pb-0">
-              {product.images.length ? product.images.map((image, index) => (
-                <figure className="relative aspect-square w-[86vw] max-w-[34rem] shrink-0 snap-center overflow-hidden bg-[#f5f5f5] lg:w-auto lg:max-w-none" key={image.id}>
-                  <img alt={image.alt || `${product.name} — foto ${index + 1}`} className="size-full object-cover" decoding="async" fetchPriority={index === 0 ? "high" : "auto"} loading={index === 0 ? "eager" : "lazy"} src={image.url} />
-                  <span className="absolute bottom-3 right-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-medium shadow-sm">{index + 1}/{product.images.length}</span>
-                </figure>
-              )) : <div className="w-[86vw] max-w-[34rem] shrink-0 snap-center lg:w-auto lg:max-w-none"><GalleryPlaceholder name={product.name} /></div>}
-            </div>
-            {product.images.length > 1 ? <p className="mt-2 text-center text-[10px] font-bold text-black/35 lg:hidden">Deslize para ver mais fotos</p> : null}
+            {product.images.length
+              ? <ProductImageGallery images={product.images} productName={product.name} />
+              : <div className="w-[86vw] max-w-[34rem] shrink-0 snap-center lg:w-auto lg:max-w-none"><GalleryPlaceholder name={product.name} /></div>}
           </div>
 
           <aside className="min-w-0 self-start lg:sticky lg:top-32">
