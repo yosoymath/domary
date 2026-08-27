@@ -12,7 +12,7 @@ export const orderStatusLabel: Record<OrderStatus, string> = {
 export const paymentStatusLabel: Record<PaymentStatus, string> = {
   PENDING: "Pagamento pendente",
   PAID: "Pago",
-  FAILED: "Pagamento recusado",
+  FAILED: "Pagamento não concluído",
   REFUNDED: "Reembolsado",
 };
 

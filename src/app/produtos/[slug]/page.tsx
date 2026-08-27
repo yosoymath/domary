@@ -165,7 +165,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {pricing.oldPrice ? <span className="text-sm text-black/40 line-through">{formatCurrency(pricing.oldPrice)}</span> : null}
               {pricing.percentage ? <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">{pricing.percentage}% OFF</span> : null}
             </div>
-            <p className="mt-1 text-xs font-semibold text-black/45">ou 3x de {formatCurrency(pricing.price / 3)} sem juros</p>
+            <p className="mt-1 text-xs font-semibold text-black/45">parcele em até 3x no checkout</p>
 
             {product.isFeatured ? <div className="mt-5 rounded-xl bg-domary-yellow/15 px-4 py-3 text-xs font-semibold">Destaque Domary · uma das peças favoritas da comunidade</div> : null}
             <p className="mt-6 whitespace-pre-line text-sm leading-6 text-black/65">{product.description}</p>

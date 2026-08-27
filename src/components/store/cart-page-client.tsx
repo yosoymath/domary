@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/components/ui/toast";
 import { type CartItem, readCart, writeCart } from "@/lib/cart";
 
@@ -13,6 +13,8 @@ export function CartPageClient() {
   const { showToast } = useToast();
   const [items, setItems] = useState<CartItem[]>([]);
   const [ready, setReady] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const checkoutRequestId = useRef<string | null>(null);
 
   useEffect(() => {
     setItems(readCart());
@@ -22,6 +24,7 @@ export function CartPageClient() {
   function replaceItems(nextItems: CartItem[]) {
     setItems(nextItems);
     writeCart(nextItems);
+    checkoutRequestId.current = null;
   }
 
   function changeQuantity(variantId: string, change: number) {
@@ -33,6 +36,40 @@ export function CartPageClient() {
   }
 
   const subtotal = items.reduce((total, item) => total + item.unitPrice * item.quantity, 0);
+
+  async function startCheckout() {
+    if (checkingOut) return;
+    setCheckingOut(true);
+    checkoutRequestId.current ??= crypto.randomUUID();
+
+    try {
+      const response = await fetch("/api/checkout/pagbank", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          checkoutRequestId: checkoutRequestId.current,
+          items: items.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
+        }),
+      });
+      const data = await response.json() as { checkoutUrl?: string; error?: string; code?: string };
+
+      if (response.status === 401) {
+        window.location.assign(`/login?callbackUrl=${encodeURIComponent("/carrinho")}`);
+        return;
+      }
+      if (!response.ok || !data.checkoutUrl) {
+        if (data.code === "RESTART_CHECKOUT") checkoutRequestId.current = null;
+        showToast({ message: data.error ?? "Não foi possível iniciar o pagamento.", variant: "error" });
+        return;
+      }
+
+      window.location.assign(data.checkoutUrl);
+    } catch {
+      showToast({ message: "Não foi possível conectar ao pagamento. Verifique sua internet e tente novamente.", variant: "error" });
+    } finally {
+      setCheckingOut(false);
+    }
+  }
 
   if (!ready) return <div className="min-h-60 animate-pulse rounded-3xl bg-black/5" />;
 
@@ -74,9 +111,10 @@ export function CartPageClient() {
       <aside className="h-fit rounded-3xl bg-domary-black p-6 text-white lg:sticky lg:top-32">
         <h2 className="text-xl font-black">Resumo</h2>
         <div className="mt-6 space-y-3 text-sm"><div className="flex justify-between gap-4 text-white/65"><span>Subtotal</span><span>{currency(subtotal)}</span></div><div className="flex justify-between gap-4 text-white/65"><span>Frete</span><span>Calculado depois</span></div></div>
-        <div className="mt-5 flex justify-between gap-4 border-t border-white/15 pt-5 text-lg font-black"><span>Total</span><span>{currency(subtotal)}</span></div>
-        <button className="focus-ring mt-6 min-h-14 w-full rounded-full bg-domary-yellow px-5 text-sm font-black text-black" onClick={() => showToast({ message: "Checkout simulado com sucesso. A integração de pagamento será feita na próxima etapa.", variant: "success" })} type="button">Simular checkout</button>
-        <p className="mt-4 text-[11px] leading-5 text-white/45">Compra segura · Troca facilitada · Dados protegidos</p>
+        <div className="mt-5 flex justify-between gap-4 border-t border-white/15 pt-5 text-lg font-black"><span>Total parcial</span><span>{currency(subtotal)}</span></div>
+        <button className="focus-ring mt-6 min-h-14 w-full rounded-full bg-domary-yellow px-5 text-sm font-black text-black disabled:cursor-wait disabled:opacity-60" disabled={checkingOut} onClick={startCheckout} type="button">{checkingOut ? "Preparando pagamento..." : "Ir para o pagamento"}</button>
+        <p className="mt-4 text-[11px] leading-5 text-white/45">Pagamento seguro no PagBank · Preços e estoque conferidos ao finalizar</p>
+        <Link className="focus-ring mt-3 inline-flex text-[11px] font-bold text-white/65 underline underline-offset-4" href="/account/profile#enderecos">Conferir endereço principal</Link>
       </aside>
     </div>
   );
