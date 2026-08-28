@@ -110,11 +110,25 @@ export function CartPageClient() {
 
       <aside className="h-fit rounded-3xl bg-domary-black p-6 text-white lg:sticky lg:top-32">
         <h2 className="text-xl font-black">Resumo</h2>
-        <div className="mt-6 space-y-3 text-sm"><div className="flex justify-between gap-4 text-white/65"><span>Subtotal</span><span>{currency(subtotal)}</span></div><div className="flex justify-between gap-4 text-white/65"><span>Frete</span><span>Calculado depois</span></div></div>
-        <div className="mt-5 flex justify-between gap-4 border-t border-white/15 pt-5 text-lg font-black"><span>Total parcial</span><span>{currency(subtotal)}</span></div>
+        <fieldset className="mt-6">
+          <legend className="text-xs font-black tracking-wider text-white/55 uppercase">Como você quer receber?</legend>
+          <label className="mt-3 flex cursor-default items-start gap-3 rounded-2xl border border-domary-yellow bg-white/[0.06] p-4">
+            <input checked className="mt-0.5 size-4 accent-domary-yellow" name="fulfillmentMethod" readOnly type="radio" value="STORE_PICKUP" />
+            <span><strong className="block text-sm text-white">Retirada na loja</strong><span className="mt-1 block text-xs leading-5 text-white/55">Sem custo · aguarde a confirmação antes de retirar</span></span>
+          </label>
+          <label aria-disabled="true" className="mt-2 flex cursor-not-allowed items-start gap-3 rounded-2xl border border-white/10 p-4 opacity-45">
+            <input className="mt-0.5 size-4" disabled name="fulfillmentMethod" type="radio" value="DELIVERY" />
+            <span><strong className="block text-sm text-white">Entrega</strong><span className="mt-1 block text-xs leading-5 text-white/55">Temporariamente indisponível</span></span>
+          </label>
+        </fieldset>
+        <div className="mt-6 space-y-3 text-sm"><div className="flex justify-between gap-4 text-white/65"><span>Subtotal</span><span>{currency(subtotal)}</span></div><div className="flex justify-between gap-4 text-white/65"><span>Retirada</span><span>Sem custo</span></div></div>
+        <div className="mt-5 flex justify-between gap-4 border-t border-white/15 pt-5 text-lg font-black"><span>Total</span><span>{currency(subtotal)}</span></div>
+        <div className="mt-5 rounded-2xl border border-domary-yellow/45 bg-domary-yellow/10 p-4">
+          <p className="text-xs font-black text-domary-yellow uppercase">Importante</p>
+          <p className="mt-1.5 text-xs leading-5 text-white/70">No momento, pedidos feitos pelo site estão disponíveis somente para retirada na loja.</p>
+        </div>
         <button className="focus-ring mt-6 min-h-14 w-full rounded-full bg-domary-yellow px-5 text-sm font-black text-black disabled:cursor-wait disabled:opacity-60" disabled={checkingOut} onClick={startCheckout} type="button">{checkingOut ? "Preparando pagamento..." : "Ir para o pagamento"}</button>
         <p className="mt-4 text-[11px] leading-5 text-white/45">Pagamento seguro no PagBank · Preços e estoque conferidos ao finalizar</p>
-        <Link className="focus-ring mt-3 inline-flex text-[11px] font-bold text-white/65 underline underline-offset-4" href="/account/profile#enderecos">Conferir endereço principal</Link>
       </aside>
     </div>
   );

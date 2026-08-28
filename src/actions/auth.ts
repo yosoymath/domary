@@ -6,12 +6,16 @@ import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { signIn, signOut } from "@/auth";
+import { createPasswordResetToken, hashPasswordResetToken, PASSWORD_RESET_RESEND_DELAY_MS } from "@/lib/auth/password-reset";
+import { isPasswordResetEmailConfigured, sendPasswordResetEmail } from "@/lib/email/send-password-reset-email";
 import { sendWelcomeEmail } from "@/lib/email/send-welcome-email";
 import { prisma } from "@/lib/prisma";
-import { loginSchema, registerSchema } from "@/lib/validations/auth";
+import { forgotPasswordSchema, loginSchema, registerSchema, resetPasswordSchema } from "@/lib/validations/auth";
 
 type RegisterField = "name" | "email" | "password" | "confirmPassword";
 type LoginField = "email" | "password";
+type ForgotPasswordField = "email";
+type ResetPasswordField = "password" | "confirmPassword";
 
 export type RegisterActionState = {
   message?: string;
@@ -22,6 +26,22 @@ export type LoginActionState = {
   message?: string;
   fieldErrors?: Partial<Record<LoginField, string[]>>;
 };
+
+export type ForgotPasswordActionState = {
+  status?: "success" | "error";
+  message?: string;
+  fieldErrors?: Partial<Record<ForgotPasswordField, string[]>>;
+};
+
+export type ResetPasswordActionState = {
+  status?: "error";
+  message?: string;
+  fieldErrors?: Partial<Record<ResetPasswordField, string[]>>;
+};
+
+const PASSWORD_RESET_REQUEST_MESSAGE = "Se houver uma conta com esse e-mail, você receberá um link para criar uma nova senha.";
+
+class InvalidPasswordResetTokenError extends Error {}
 
 function formValue(formData: FormData, field: string) {
   const value = formData.get(field);
@@ -153,6 +173,159 @@ export async function login(
   }
 
   return { message: "Não foi possível entrar agora. Tente novamente." };
+}
+
+export async function requestPasswordReset(
+  _previousState: ForgotPasswordActionState,
+  formData: FormData,
+): Promise<ForgotPasswordActionState> {
+  const parsed = forgotPasswordSchema.safeParse({
+    email: formValue(formData, "email"),
+  });
+
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "Revise o campo destacado.",
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  if (!isPasswordResetEmailConfigured()) {
+    return {
+      status: "error",
+      message: "O envio de recuperação por e-mail ainda não está configurado. Tente novamente mais tarde.",
+    };
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: parsed.data.email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        passwordResetToken: { select: { createdAt: true } },
+      },
+    });
+
+    if (!user) {
+      return { status: "success", message: PASSWORD_RESET_REQUEST_MESSAGE };
+    }
+
+    const now = new Date();
+    const resendAvailableAt = user.passwordResetToken
+      ? user.passwordResetToken.createdAt.getTime() + PASSWORD_RESET_RESEND_DELAY_MS
+      : 0;
+
+    if (resendAvailableAt > now.getTime()) {
+      return { status: "success", message: PASSWORD_RESET_REQUEST_MESSAGE };
+    }
+
+    const resetToken = createPasswordResetToken(now);
+    await prisma.passwordResetToken.upsert({
+      where: { userId: user.id },
+      create: {
+        userId: user.id,
+        tokenHash: resetToken.tokenHash,
+        expiresAt: resetToken.expiresAt,
+      },
+      update: {
+        tokenHash: resetToken.tokenHash,
+        expiresAt: resetToken.expiresAt,
+        createdAt: now,
+      },
+    });
+
+    after(async () => {
+      try {
+        await sendPasswordResetEmail({ name: user.name, email: user.email, token: resetToken.token });
+      } catch (emailError) {
+        console.error("Falha inesperada no e-mail de redefinição de senha.", emailError instanceof Error ? emailError.message : "Erro desconhecido");
+      }
+    });
+
+    return { status: "success", message: PASSWORD_RESET_REQUEST_MESSAGE };
+  } catch (error) {
+    console.error("Falha ao solicitar redefinição de senha", error);
+    return {
+      status: "error",
+      message: "Não foi possível solicitar a redefinição agora. Tente novamente.",
+    };
+  }
+}
+
+export async function resetPassword(
+  _previousState: ResetPasswordActionState,
+  formData: FormData,
+): Promise<ResetPasswordActionState> {
+  const parsed = resetPasswordSchema.safeParse({
+    token: formValue(formData, "token"),
+    password: formValue(formData, "password"),
+    confirmPassword: formValue(formData, "confirmPassword"),
+  });
+
+  if (!parsed.success) {
+    const fieldErrors = parsed.error.flatten().fieldErrors;
+    return {
+      status: "error",
+      message: fieldErrors.token?.length ? "Este link de redefinição é inválido ou expirou." : "Revise os campos destacados.",
+      fieldErrors: {
+        password: fieldErrors.password,
+        confirmPassword: fieldErrors.confirmPassword,
+      },
+    };
+  }
+
+  if (bcrypt.truncates(parsed.data.password)) {
+    return {
+      status: "error",
+      message: "Revise os campos destacados.",
+      fieldErrors: { password: ["A senha é muito longa. Use no máximo 72 bytes."] },
+    };
+  }
+
+  const tokenHash = hashPasswordResetToken(parsed.data.token);
+
+  try {
+    const resetToken = await prisma.passwordResetToken.findUnique({
+      where: { tokenHash },
+      select: { id: true, userId: true },
+    });
+
+    if (!resetToken) {
+      return { status: "error", message: "Este link de redefinição é inválido ou expirou." };
+    }
+
+    const passwordHash = await bcrypt.hash(parsed.data.password, 12);
+    const now = new Date();
+
+    await prisma.$transaction(async (transaction) => {
+      const consumed = await transaction.passwordResetToken.deleteMany({
+        where: {
+          id: resetToken.id,
+          tokenHash,
+          expiresAt: { gt: now },
+        },
+      });
+
+      if (consumed.count !== 1) throw new InvalidPasswordResetTokenError();
+
+      await transaction.user.update({
+        where: { id: resetToken.userId },
+        data: { passwordHash },
+      });
+    });
+  } catch (error) {
+    if (error instanceof InvalidPasswordResetTokenError) {
+      return { status: "error", message: "Este link de redefinição é inválido ou expirou." };
+    }
+
+    console.error("Falha ao redefinir senha", error);
+    return { status: "error", message: "Não foi possível criar a nova senha agora. Tente novamente." };
+  }
+
+  redirect("/login?passwordReset=1");
 }
 
 export async function logout() {

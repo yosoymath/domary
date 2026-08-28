@@ -6,10 +6,9 @@ import { prisma } from "@/lib/prisma";
 
 export default async function AccountPage() {
   const user = await requireCurrentUser("/account");
-  const [orderCount, favoriteCount, addressCount, recentOrders] = await Promise.all([
+  const [orderCount, favoriteCount, recentOrders] = await Promise.all([
     prisma.order.count({ where: { userId: user.id } }),
     prisma.favorite.count({ where: { userId: user.id } }),
-    prisma.customerAddress.count({ where: { userId: user.id } }),
     prisma.order.findMany({
       where: { userId: user.id },
       select: { number: true, status: true, total: true, createdAt: true },
@@ -24,7 +23,7 @@ export default async function AccountPage() {
         {[
           { label: "Pedidos", value: orderCount, href: "/account/orders" },
           { label: "Favoritos", value: favoriteCount, href: "/account/favorites" },
-          { label: "Perfil", value: user.phone && user.cpf && user.birthDate && addressCount ? "Completo" : "Pendente", href: "/account/profile" },
+          { label: "Perfil", value: user.phone && user.cpf && user.birthDate ? "Completo" : "Pendente", href: "/account/profile" },
         ].map((item) => (
           <Link className="focus-ring rounded-3xl border border-black/8 bg-white p-5 transition hover:-translate-y-0.5 hover:border-domary-yellow" href={item.href} key={item.label}>
             <p className="text-xs font-black tracking-wider text-black/40 uppercase">{item.label}</p>
@@ -54,7 +53,7 @@ export default async function AccountPage() {
       </div>
 
       <div className="rounded-[2rem] bg-domary-black p-6 text-white sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-8">
-        <div><p className="text-xs font-black tracking-wider text-domary-yellow uppercase">Dados atualizados, entrega tranquila</p><h2 className="mt-2 text-2xl font-black">Complete seu perfil</h2><p className="mt-2 text-sm text-white/55">Mantenha seu telefone atualizado para facilitar o acompanhamento das entregas.</p></div>
+        <div><p className="text-xs font-black tracking-wider text-domary-yellow uppercase">Dados atualizados, retirada tranquila</p><h2 className="mt-2 text-2xl font-black">Complete seu perfil</h2><p className="mt-2 text-sm text-white/55">Mantenha seu telefone atualizado para facilitar o contato sobre a retirada dos pedidos.</p></div>
         <Link className="focus-ring mt-5 inline-flex shrink-0 rounded-full bg-domary-yellow px-6 py-3 text-sm font-black text-domary-black sm:mt-0" href="/account/profile">Atualizar dados</Link>
       </div>
     </div>

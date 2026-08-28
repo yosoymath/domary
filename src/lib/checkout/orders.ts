@@ -1,6 +1,7 @@
 import "server-only";
 
 import { Prisma } from "@prisma/client";
+import { STORE_PICKUP_SNAPSHOT } from "@/lib/checkout/fulfillment";
 import { centsToDecimal, effectiveUnitPriceCents, moneyToCents } from "@/lib/checkout/pricing";
 import { prisma } from "@/lib/prisma";
 import type { PagBankPaymentUpdate } from "@/lib/pagbank/webhook";
@@ -62,38 +63,14 @@ export async function createPendingCheckoutOrder(
   userId: string,
   checkoutRequestId: string,
   rawItems: CheckoutCartItem[],
-  shippingAmountCents: number,
 ) {
   const items = mergeCartItems(rawItems);
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: {
-      id: true,
-      addresses: {
-        select: {
-          postalCode: true,
-          street: true,
-          number: true,
-          complement: true,
-          district: true,
-          city: true,
-          state: true,
-        },
-        orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
-        take: 1,
-      },
-    },
+    select: { id: true },
   });
 
   if (!user) throw new CheckoutDomainError("Sua sessão não é mais válida.", "UNAUTHORIZED", 401);
-  const address = user.addresses[0];
-  if (!address) {
-    throw new CheckoutDomainError(
-      "Cadastre um endereço principal antes de finalizar a compra.",
-      "ADDRESS_REQUIRED",
-      422,
-    );
-  }
 
   const now = new Date();
   const variants = await prisma.productVariant.findMany({
@@ -153,7 +130,7 @@ export async function createPendingCheckoutOrder(
   const subtotalCents = preparedItems.reduce((sum, item) => sum + item.baseUnitCents * item.quantity, 0);
   const discountedSubtotalCents = preparedItems.reduce((sum, item) => sum + item.totalCents, 0);
   const discountAmountCents = subtotalCents - discountedSubtotalCents;
-  const totalCents = discountedSubtotalCents + shippingAmountCents;
+  const totalCents = discountedSubtotalCents;
 
   const order = await prisma.$transaction(async (transaction) => {
     for (const item of preparedItems) {
@@ -177,10 +154,10 @@ export async function createPendingCheckoutOrder(
         checkoutRequestId,
         paymentProvider: "PAGBANK",
         subtotal: centsToDecimal(subtotalCents),
-        shippingAmount: centsToDecimal(shippingAmountCents),
+        shippingAmount: centsToDecimal(0),
         discountAmount: centsToDecimal(discountAmountCents),
         total: centsToDecimal(totalCents),
-        shippingAddress: address,
+        shippingAddress: STORE_PICKUP_SNAPSHOT,
         items: {
           create: preparedItems.map((item) => ({
             productId: item.variant.product.id,
@@ -205,7 +182,7 @@ export async function createPendingCheckoutOrder(
     });
   });
 
-  return { order, address };
+  return { order };
 }
 
 export async function releasePendingOrder(orderId: string, detail: string) {

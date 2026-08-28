@@ -71,6 +71,12 @@ export default async function CheckoutReturnPage({ searchParams }: CheckoutRetur
         <h1 className="mt-2 text-3xl font-black tracking-[-0.04em] sm:text-4xl">{state.title}</h1>
         <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-black/55">{state.description}</p>
         <p className="mt-5 text-xl font-black">{formatCurrency(order.total)}</p>
+        {order.paymentStatus === "PAID" || order.paymentStatus === "PENDING" ? (
+          <div className="mx-auto mt-7 max-w-xl rounded-2xl border border-domary-yellow/40 bg-domary-yellow/[0.09] p-4 text-left">
+            <p className="text-xs font-black tracking-wider text-black uppercase">Retirada na loja</p>
+            <p className="mt-1.5 text-xs leading-5 text-black/60">No momento, esta é a única modalidade disponível. Aguarde a confirmação de que o pedido está pronto antes de ir à loja.</p>
+          </div>
+        ) : null}
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           {canRetry ? <a className="focus-ring inline-flex min-h-12 items-center justify-center rounded-full bg-domary-yellow px-6 text-sm font-black text-black" href={order.providerCheckoutUrl ?? undefined}>Tentar novamente</a> : null}
           <Link className="focus-ring inline-flex min-h-12 items-center justify-center rounded-full bg-domary-black px-6 text-sm font-black text-white" href={`/account/orders/${order.number}`}>Ver pedido</Link>

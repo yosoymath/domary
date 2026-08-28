@@ -9,7 +9,7 @@ export function Footer() {
             Domary<span className="text-domary-yellow">.</span>
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-6 text-white/60">
-            Moda para vestir sua atitude. Peças marcantes, qualidade e uma experiência simples do clique à entrega.
+            Moda para vestir sua atitude. Peças marcantes, qualidade e uma experiência simples do clique à retirada.
           </p>
         </div>
 

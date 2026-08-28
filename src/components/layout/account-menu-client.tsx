@@ -20,7 +20,7 @@ type AccountMenuClientProps = {
 const accountLinks = [
   { href: "/account", label: "Visão geral", description: "Resumo da sua conta" },
   { href: "/account/profile", label: "Perfil", description: "Seus dados pessoais" },
-  { href: "/account/orders", label: "Minhas compras", description: "Pedidos e entregas" },
+  { href: "/account/orders", label: "Minhas compras", description: "Pedidos e retiradas" },
   { href: "/account/favorites", label: "Meus favoritos", description: "Produtos que você amou" },
 ];
 

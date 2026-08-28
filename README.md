@@ -55,7 +55,7 @@ As pastas de rotas são introduzidas conforme cada módulo for implementado. A H
 - **Estoque por variante:** `ProductVariant` representa cada combinação de tamanho e cor, com SKU e saldo próprios. O estoque total exibido no admin é a soma das variantes ativas.
 - **Preço seguro:** valores monetários usam `Decimal(10,2)`, nunca ponto flutuante.
 - **Histórico de pedidos:** `OrderItem` guarda nome, SKU, atributos e preço no momento da compra.
-- **Endereço imutável:** `shippingAddress` é um snapshot JSON e não muda se o cliente editar o cadastro depois.
+- **Modalidade imutável:** `shippingAddress` preserva um snapshot JSON da modalidade de recebimento. Durante o período de retirada exclusiva, o pedido registra `STORE_PICKUP`; pedidos antigos podem manter o endereço usado na compra.
 - **Exclusão segura:** produtos e usuários referenciados por pedidos usam `Restrict`; catálogo fora de linha deve ser arquivado.
 - **Autorização:** autenticação e autorização são responsabilidades separadas. O middleware protege `/admin`, mas cada Server Action também deve validar `session.user.role === "ADMIN"`.
 - **Checkout e estoque:** criação do pedido e baixa de estoque devem ocorrer em uma transação Prisma, usando atualização condicional para impedir estoque negativo.
@@ -86,7 +86,19 @@ Rotas disponíveis:
 
 - `/register`: cadastro de cliente.
 - `/login`: login com e-mail e senha.
+- `/forgot-password`: solicitação segura de recuperação de senha.
+- `/reset-password/[token]`: criação da nova senha por link individual, válido por 1 hora e utilizável uma única vez.
 - `/api/auth/*`: handlers internos do Auth.js.
+
+O cadastro e a recuperação de senha usam o Resend para e-mails transacionais. Configure as variáveis abaixo no ambiente de desenvolvimento e na hospedagem:
+
+```dotenv
+APP_URL="https://seu-dominio.com"
+RESEND_API_KEY="re_..."
+EMAIL_FROM="Domary <contato@seu-dominio.com>"
+```
+
+O endereço de `EMAIL_FROM` precisa pertencer a um domínio verificado no provedor.
 
 ## Área do cliente
 
@@ -95,7 +107,7 @@ As páginas em `/account` usam um Data Access Layer server-only que valida a ses
 - `/account`: resumo da conta, pedidos recentes e completude do perfil.
 - `/account/profile`: edição de nome e telefone; o e-mail permanece protegido até existir verificação de identidade.
 - `/account/orders`: histórico de compras com status, pagamento e total.
-- `/account/orders/[number]`: itens, valores e endereço preservado no pedido.
+- `/account/orders/[number]`: itens, valores e modalidade de recebimento preservada no pedido.
 - `/account/favorites`: produtos favoritos persistidos pela relação única `Favorite`.
 
 O menu do perfil no cabeçalho exibe nome, e-mail, sessão ativa, atalhos da conta, painel administrativo para usuários `ADMIN` e logout. Produtos reais com status `ACTIVE` aparecem na Home e podem ser favoritados; os cards demonstrativos usados quando o catálogo está vazio não oferecem uma ação falsa.

@@ -6,18 +6,9 @@ import { register, type RegisterActionState } from "@/actions/auth";
 import { RequiredMark } from "@/components/ui/required-mark";
 import { PASSWORD_LETTER_PATTERN, PASSWORD_MIN_LENGTH, PASSWORD_NUMBER_PATTERN } from "@/lib/password-policy";
 import { FieldError, FormAlert, inputClassName } from "./form-controls";
+import { PasswordVisibilityIcon } from "./password-visibility-icon";
 
 const initialState: RegisterActionState = {};
-
-function EyeIcon({ visible }: { visible: boolean }) {
-  return (
-    <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 24 24">
-      <path d="M2.8 12s3.4-6 9.2-6 9.2 6 9.2 6-3.4 6-9.2 6-9.2-6-9.2-6Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
-      <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.7" />
-      {!visible ? <path d="m4 4 16 16" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" /> : null}
-    </svg>
-  );
-}
 
 function PasswordRequirement({ checked, children }: { checked: boolean; children: React.ReactNode }) {
   return (
@@ -111,7 +102,7 @@ export function RegisterForm() {
             onClick={() => setPasswordVisible((visible) => !visible)}
             type="button"
           >
-            <EyeIcon visible={passwordVisible} />
+            <PasswordVisibilityIcon visible={passwordVisible} />
           </button>
         </div>
         <FieldError id="register-password-error" messages={state.fieldErrors?.password} />
@@ -141,7 +132,7 @@ export function RegisterForm() {
             onClick={() => setConfirmationVisible((visible) => !visible)}
             type="button"
           >
-            <EyeIcon visible={confirmationVisible} />
+            <PasswordVisibilityIcon visible={confirmationVisible} />
           </button>
         </div>
         <FieldError id="register-confirm-password-error" messages={state.fieldErrors?.confirmPassword} />

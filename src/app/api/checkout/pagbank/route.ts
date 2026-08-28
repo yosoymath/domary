@@ -9,7 +9,7 @@ import {
 } from "@/lib/checkout/orders";
 import { moneyToCents } from "@/lib/checkout/pricing";
 import { prisma } from "@/lib/prisma";
-import { createPagBankCheckout, getPagBankSettings, PagBankApiError } from "@/lib/pagbank/client";
+import { createPagBankCheckout, PagBankApiError } from "@/lib/pagbank/client";
 
 export const runtime = "nodejs";
 
@@ -44,7 +44,6 @@ export async function POST(request: Request) {
   }
 
   try {
-    const settings = getPagBankSettings();
     const existing = await findCheckoutAttempt(session.user.id, parsed.data.checkoutRequestId);
 
     if (existing?.providerCheckoutUrl && existing.paymentStatus === "PENDING") {
@@ -63,7 +62,6 @@ export async function POST(request: Request) {
         session.user.id,
         parsed.data.checkoutRequestId,
         parsed.data.items,
-        settings.shippingAmountCents,
       );
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
@@ -79,8 +77,6 @@ export async function POST(request: Request) {
     try {
       const checkout = await createPagBankCheckout({
         orderId: pendingOrder.order.id,
-        address: pendingOrder.address,
-        shippingAmountCents: settings.shippingAmountCents,
         items: pendingOrder.order.items.map((item) => ({
           referenceId: item.variantId ?? item.sku,
           name: item.productName,
@@ -102,7 +98,7 @@ export async function POST(request: Request) {
       console.error("Falha ao criar checkout PagBank", error);
       return errorResponse(
         error instanceof PagBankApiError && !error.retryable
-          ? "O PagBank não aceitou os dados do checkout. Revise seu cadastro e tente novamente."
+          ? "O PagBank não aceitou os dados do checkout. Revise as informações de pagamento e tente novamente."
           : "Não foi possível confirmar a comunicação com o PagBank. Aguarde e tente novamente.",
         error instanceof PagBankApiError && !error.retryable ? "RESTART_CHECKOUT" : "PAGBANK_UNAVAILABLE",
         502,

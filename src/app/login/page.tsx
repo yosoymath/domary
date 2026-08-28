@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 type LoginPageProps = {
   searchParams: Promise<{
     callbackUrl?: string;
+    passwordReset?: string;
     registered?: string;
   }>;
 };
@@ -30,6 +31,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       title="Que bom ter você de volta"
     >
       {params.registered === "1" ? <ToastFeedback message="Conta criada com sucesso. Agora é só entrar." variant="success" /> : null}
+      {params.passwordReset === "1" ? <ToastFeedback message="Senha redefinida com sucesso. Entre com sua nova senha." variant="success" /> : null}
       <LoginForm callbackUrl={params.callbackUrl} />
     </AuthShell>
   );

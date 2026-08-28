@@ -30,7 +30,7 @@ export function WelcomeEmail({ firstName, shopUrl }: WelcomeEmailProps) {
             <p style={{ fontSize: "14px", fontWeight: 800, margin: "0 0 14px" }}>Com sua conta, você pode:</p>
             <p style={{ color: "#666666", fontSize: "14px", lineHeight: 1.8, margin: 0 }}>
               ✓ Salvar seus produtos favoritos<br />
-              ✓ Acompanhar pedidos e entregas<br />
+              ✓ Acompanhar pedidos e retiradas<br />
               ✓ Manter seus dados de compra atualizados<br />
               ✓ Receber uma experiência personalizada
             </p>

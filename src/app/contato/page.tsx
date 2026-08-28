@@ -13,7 +13,7 @@ function validSupportEmail() {
 }
 
 const topics = [
-  { title: "Pedidos e entregas", text: "Consulte o andamento, os itens e os dados da sua compra na área do cliente.", href: "/account/orders", action: "Ver meus pedidos" },
+  { title: "Pedidos e retiradas", text: "Consulte o andamento, os itens e os dados para retirada da sua compra na área do cliente.", href: "/account/orders", action: "Ver meus pedidos" },
   { title: "Trocas e devoluções", text: "Confira prazos, condições e o passo a passo antes de iniciar uma solicitação.", href: "/trocas", action: "Consultar política" },
   { title: "Dúvidas sobre produtos", text: "Veja o catálogo, as variações disponíveis e as informações de cada peça.", href: "/produtos", action: "Explorar produtos" },
 ] as const;

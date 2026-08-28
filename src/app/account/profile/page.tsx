@@ -30,7 +30,7 @@ export default async function ProfilePage() {
       <div className="rounded-[2rem] border border-black/8 bg-white p-5 sm:p-8">
         <p className="text-xs font-black tracking-wider text-black/40 uppercase">Dados pessoais</p>
         <h2 className="mt-2 text-3xl font-black">Meu perfil</h2>
-        <p className="mt-2 text-sm text-black/50">Atualize as informações usadas no atendimento e nas entregas.</p>
+        <p className="mt-2 text-sm text-black/50">Atualize as informações usadas no atendimento e na retirada dos pedidos.</p>
         <div className="mt-8">
           <ProfileForm
             birthDate={user.birthDate?.toISOString().slice(0, 10) ?? ""}
@@ -46,8 +46,8 @@ export default async function ProfilePage() {
 
       <section className="rounded-[2rem] border border-black/8 bg-white p-5 sm:p-8" id="enderecos">
         <p className="text-xs font-black tracking-wider text-black/40 uppercase">Endereços</p>
-        <h2 className="mt-2 text-3xl font-black">Locais de entrega</h2>
-        <p className="mt-2 text-sm text-black/50">Cadastre mais de um endereço e escolha qual deles deve ser o principal.</p>
+        <h2 className="mt-2 text-3xl font-black">Endereços salvos</h2>
+        <p className="mt-2 text-sm text-black/50">A entrega está temporariamente indisponível. Você pode manter seus endereços salvos para uso futuro.</p>
         <div className="mt-8"><AddressManager addresses={addresses} /></div>
       </section>
 

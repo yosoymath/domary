@@ -22,7 +22,7 @@ export default async function OrdersPage() {
 
   return (
     <div>
-      <div className="mb-6"><p className="text-xs font-black tracking-wider text-black/40 uppercase">Histórico</p><h2 className="mt-2 text-3xl font-black">Minhas compras</h2><p className="mt-2 text-sm text-black/50">Acompanhe pedidos, pagamentos e entregas em um só lugar.</p></div>
+      <div className="mb-6"><p className="text-xs font-black tracking-wider text-black/40 uppercase">Histórico</p><h2 className="mt-2 text-3xl font-black">Minhas compras</h2><p className="mt-2 text-sm text-black/50">Acompanhe pedidos, pagamentos e retiradas em um só lugar.</p></div>
       {orders.length ? (
         <div className="space-y-4">
           {orders.map((order) => (

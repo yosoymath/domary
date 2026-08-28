@@ -7,21 +7,9 @@ type CheckoutItem = {
   unitAmount: number;
 };
 
-type CheckoutAddress = {
-  postalCode: string;
-  street: string;
-  number: string;
-  complement?: string | null;
-  district: string;
-  city: string;
-  state: string;
-};
-
 export type CreatePagBankCheckoutInput = {
   orderId: string;
   items: CheckoutItem[];
-  address: CheckoutAddress;
-  shippingAmountCents: number;
 };
 
 type PagBankLink = {
@@ -70,12 +58,6 @@ export function getPagBankSettings() {
     throw new Error("APP_URL deve usar HTTPS no ambiente de produção.");
   }
 
-  const shippingRaw = process.env.DOMARY_SHIPPING_AMOUNT_CENTS;
-  if (environment === "production" && (shippingRaw === undefined || shippingRaw === "")) {
-    throw new Error("Defina DOMARY_SHIPPING_AMOUNT_CENTS antes de ativar pagamentos reais.");
-  }
-
-  const shippingAmountCents = integerEnv("DOMARY_SHIPPING_AMOUNT_CENTS", 0, 0, 99_999_900);
   const installmentsLimit = integerEnv("PAGBANK_INSTALLMENTS_LIMIT", 3, 1, 12);
   const interestFreeInstallments = integerEnv("PAGBANK_INTEREST_FREE_INSTALLMENTS", 0, 0, installmentsLimit);
 
@@ -84,7 +66,6 @@ export function getPagBankSettings() {
     token,
     appUrl: appUrl.origin,
     apiUrl: environment === "production" ? "https://api.pagseguro.com" : "https://sandbox.api.pagseguro.com",
-    shippingAmountCents,
     installmentsLimit,
     interestFreeInstallments,
   } as const;
@@ -112,21 +93,6 @@ export function buildPagBankCheckoutPayload(
       quantity: item.quantity,
       unit_amount: item.unitAmount,
     })),
-    shipping: {
-      type: input.shippingAmountCents > 0 ? "FIXED" : "FREE",
-      ...(input.shippingAmountCents > 0 ? { amount: input.shippingAmountCents } : {}),
-      address_modifiable: false,
-      address: {
-        street: input.address.street,
-        number: input.address.number,
-        ...(input.address.complement ? { complement: input.address.complement.slice(0, 40) } : {}),
-        locality: input.address.district.slice(0, 60),
-        city: input.address.city,
-        region_code: input.address.state,
-        country: "BRA",
-        postal_code: input.address.postalCode.replace(/\D/g, ""),
-      },
-    },
     payment_methods: [
       { type: "CREDIT_CARD" },
       { type: "PIX" },

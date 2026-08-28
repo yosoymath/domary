@@ -49,7 +49,7 @@ export default function ExchangesPage() {
         <ul className="list-disc space-y-2 pl-5">
           <li>Não envie produtos por conta própria antes de receber as instruções de atendimento.</li>
           <li>Sempre que possível, conserve etiquetas, acessórios e a embalagem recebida.</li>
-          <li>Os prazos de transporte podem variar conforme a localidade e a modalidade de envio.</li>
+          <li>Os prazos e a forma de devolução serão informados pelo atendimento conforme cada caso.</li>
           <li>Esta página não reduz garantias ou outros direitos assegurados pela legislação brasileira.</li>
         </ul>
         <a className="focus-ring inline-flex text-xs font-bold text-black underline decoration-domary-yellow decoration-2 underline-offset-4" href="https://www.gov.br/mj/pt-br/assuntos/noticias/consumidor-tem-direito-ao-arrependimento-em-compras-on-line" rel="noreferrer" target="_blank">Consultar orientação oficial do Ministério da Justiça ↗</a>

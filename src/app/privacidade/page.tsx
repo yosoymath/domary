@@ -25,7 +25,7 @@ export default function PrivacyPage() {
       <SupportSection title="2. Para que usamos os dados">
         <ul className="list-disc space-y-2 pl-5">
           <li>Criar e proteger sua conta.</li>
-          <li>Processar compras, entregas, trocas e atendimento.</li>
+          <li>Processar compras, retiradas, trocas e atendimento.</li>
           <li>Manter carrinho, favoritos e preferências da loja.</li>
           <li>Prevenir fraude, abuso e acessos não autorizados.</li>
           <li>Cumprir obrigações legais, fiscais e regulatórias.</li>
@@ -34,7 +34,7 @@ export default function PrivacyPage() {
       </SupportSection>
 
       <SupportSection title="3. Compartilhamento">
-        <p>Os dados podem ser compartilhados, no limite necessário, com operadores que apoiam pagamento, entrega, hospedagem, comunicação, prevenção a fraude e suporte técnico. Esses parceiros devem tratar as informações para as finalidades contratadas e com medidas adequadas de segurança.</p>
+        <p>Os dados podem ser compartilhados, no limite necessário, com operadores que apoiam pagamento, retirada, hospedagem, comunicação, prevenção a fraude e suporte técnico. Esses parceiros devem tratar as informações para as finalidades contratadas e com medidas adequadas de segurança.</p>
         <p>Também poderemos compartilhar informações quando houver obrigação legal, ordem de autoridade competente ou necessidade de proteger direitos da Domary e de terceiros.</p>
       </SupportSection>
 

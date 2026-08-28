@@ -62,29 +62,6 @@ const defaultTitles: Record<ToastVariant, string> = {
   info: "Informação",
 };
 
-const variantStyles: Record<ToastVariant, { border: string; icon: string; title: string }> = {
-  success: {
-    border: "border-emerald-200",
-    icon: "bg-emerald-100 text-emerald-700",
-    title: "text-emerald-700",
-  },
-  error: {
-    border: "border-red-200",
-    icon: "bg-red-100 text-red-700",
-    title: "text-red-700",
-  },
-  warning: {
-    border: "border-amber-300",
-    icon: "bg-amber-100 text-amber-800",
-    title: "text-amber-800",
-  },
-  info: {
-    border: "border-black/10",
-    icon: "bg-black/[0.05] text-black/60",
-    title: "text-black/75",
-  },
-};
-
 function ToastIcon({ variant }: { variant: ToastVariant }) {
   if (variant === "success") {
     return <path d="m6.5 12.5 3.4 3.4 7.6-8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />;
@@ -179,21 +156,25 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     <ToastContext.Provider value={value}>
       {children}
       <div aria-label="Notificações" className="pointer-events-none fixed top-[max(1rem,env(safe-area-inset-top))] right-4 z-[300] flex w-[min(24rem,calc(100vw-2rem))] flex-col items-end gap-3" role="region">
-        {toasts.map((toast) => {
-          const styles = variantStyles[toast.variant];
-          return (
-            <div aria-atomic="true" className={`toast-item pointer-events-auto flex w-full items-start gap-3 rounded-xl border bg-white p-3 text-black shadow-lg ${styles.border}`} data-exiting={toast.exiting ? "true" : "false"} key={toast.id} role={toast.variant === "error" || toast.variant === "warning" ? "alert" : "status"}>
-              <span className={`grid size-8 shrink-0 place-items-center rounded-full ${styles.icon}`} data-toast-icon>
-                <svg aria-hidden="true" className="size-4.5" fill="none" viewBox="0 0 24 24"><ToastIcon variant={toast.variant} /></svg>
-              </span>
-              <span className="min-w-0 flex-1 pt-0.5">
-                <strong className={`block text-sm font-black ${styles.title}`}>{toast.title ?? defaultTitles[toast.variant]}</strong>
-                <span className="mt-0.5 block text-xs leading-5 text-black/55">{toast.message}</span>
-              </span>
-              <button aria-label="Fechar notificação" className="focus-ring grid size-7 shrink-0 place-items-center rounded-full text-black/35 hover:bg-black/[0.05] hover:text-black" onClick={() => dismissToast(toast.id)} type="button">×</button>
-            </div>
-          );
-        })}
+        {toasts.map((toast) => (
+          <div
+            aria-atomic="true"
+            className="toast-item pointer-events-auto flex w-full items-start gap-3 rounded-xl border p-3"
+            data-exiting={toast.exiting ? "true" : "false"}
+            data-variant={toast.variant}
+            key={toast.id}
+            role={toast.variant === "error" || toast.variant === "warning" ? "alert" : "status"}
+          >
+            <span className="toast-icon grid size-8 shrink-0 place-items-center rounded-full" data-toast-icon>
+              <svg aria-hidden="true" className="size-4.5" fill="none" viewBox="0 0 24 24"><ToastIcon variant={toast.variant} /></svg>
+            </span>
+            <span className="min-w-0 flex-1 pt-0.5">
+              <strong className="toast-title block text-sm font-black">{toast.title ?? defaultTitles[toast.variant]}</strong>
+              <span className="toast-message mt-0.5 block text-xs leading-5">{toast.message}</span>
+            </span>
+            <button aria-label="Fechar notificação" className="toast-dismiss focus-ring grid size-7 shrink-0 place-items-center rounded-full text-lg" onClick={() => dismissToast(toast.id)} type="button">×</button>
+          </div>
+        ))}
       </div>
     </ToastContext.Provider>
   );

@@ -94,15 +94,12 @@ export default async function Home() {
     <>
       <section id="novidades" className="relative isolate overflow-hidden bg-domary-black text-white">
         <div aria-hidden="true" className="absolute inset-0">
-          <picture className="block size-full">
-            <source media="(prefers-reduced-motion: reduce)" srcSet="/media/domary-sport-hero-v2.webp" />
-            <img alt="" className="size-full object-cover object-[68%_center] sm:object-[64%_center]" decoding="async" fetchPriority="high" src="/media/domary-sport-hero-v2.gif" />
-          </picture>
+          <img alt="" className="size-full object-cover object-[86%_center] sm:object-[78%_center] lg:object-[70%_center]" decoding="async" fetchPriority="high" src="/media/domary-ice-hero-static.webp" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,8,8,0.98)_0%,rgba(8,8,8,0.9)_32%,rgba(8,8,8,0.52)_58%,rgba(8,8,8,0.08)_100%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/45 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/45 to-transparent" />
         </div>
 
-        <div className="relative mx-auto flex min-h-[650px] max-w-7xl items-center px-4 py-14 sm:min-h-[720px] sm:px-6 sm:py-20 lg:px-8">
+        <div className="relative mx-auto flex min-h-[580px] max-w-7xl items-center px-4 py-12 sm:min-h-[620px] sm:px-6 sm:py-16 lg:px-8">
           <div className="max-w-3xl">
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-2 text-[10px] font-bold tracking-[0.18em] uppercase sm:text-xs">
               <span className="size-2 rounded-full bg-domary-yellow" />
@@ -129,7 +126,7 @@ export default async function Home() {
       <section aria-label="Diferenciais Domary" className="border-b border-black/10 bg-white">
         <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-black/10 px-4 sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:px-6 lg:px-8">
           {[
-            ["01", "Envio rápido", "Para todo o Brasil"],
+            ["01", "Retire na loja", "Sem custo adicional"],
             ["02", "Compra segura", "Seus dados protegidos"],
             ["03", "Troca fácil", "Até 30 dias"],
           ].map(([number, title, text]) => (

@@ -131,7 +131,7 @@ function AddressForm({ address, onCancel, onSaved }: { address?: CustomerAddress
       <input name="addressId" type="hidden" value={address?.id ?? ""} />
       <div>
         <p className="text-sm font-black">{address ? `Editar ${address.label}` : "Adicionar endereço"}</p>
-        <p className="mt-1 text-xs text-black/45">Os campos marcados são necessários para identificar o local de entrega.</p>
+        <p className="mt-1 text-xs text-black/45">Os campos marcados serão usados quando a modalidade de entrega voltar a ficar disponível.</p>
       </div>
       <AccountFormAlert message={state.status === "error" ? state.message : undefined} status="error" trigger={state} />
 
@@ -197,7 +197,7 @@ function AddressForm({ address, onCancel, onSaved }: { address?: CustomerAddress
 
       <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-black/8 bg-white px-4 py-3 text-sm">
         <input className="mt-0.5 size-4 accent-domary-yellow" defaultChecked={address?.isPrimary ?? false} name="isPrimary" type="checkbox" />
-        <span><strong className="block font-black">Endereço principal</strong><span className="mt-0.5 block text-xs text-black/45">Será a primeira opção sugerida nas entregas.</span></span>
+        <span><strong className="block font-black">Endereço principal</strong><span className="mt-0.5 block text-xs text-black/45">Será a primeira opção sugerida quando a entrega voltar a ficar disponível.</span></span>
       </label>
 
       <div className="flex flex-col gap-3 sm:flex-row">
@@ -242,7 +242,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressData[]
           ))}
         </div>
       ) : (
-        <div className="rounded-3xl border border-dashed border-black/15 px-5 py-7 text-center"><p className="font-black">Nenhum endereço cadastrado</p><p className="mt-1 text-sm text-black/45">Adicione um endereço para agilizar suas próximas compras.</p></div>
+        <div className="rounded-3xl border border-dashed border-black/15 px-5 py-7 text-center"><p className="font-black">Nenhum endereço cadastrado</p><p className="mt-1 text-sm text-black/45">Você poderá adicionar um endereço agora ou quando a entrega voltar a ficar disponível.</p></div>
       )}
 
       <AddressForm

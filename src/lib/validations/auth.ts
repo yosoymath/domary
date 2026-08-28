@@ -33,3 +33,19 @@ export const loginSchema = z.object({
   email: emailSchema,
   password: z.string().min(1, "Informe sua senha."),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: emailSchema,
+});
+
+export const resetPasswordSchema = z.object({
+  token: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z0-9_-]{40,128}$/, "Este link de redefinição é inválido."),
+  password: passwordSchema,
+  confirmPassword: z.string().min(1, "Confirme sua nova senha."),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem.",
+  path: ["confirmPassword"],
+});

@@ -4,8 +4,8 @@ export const orderStatusLabel: Record<OrderStatus, string> = {
   PENDING: "Pedido recebido",
   CONFIRMED: "Confirmado",
   PROCESSING: "Em preparação",
-  SHIPPED: "Enviado",
-  DELIVERED: "Entregue",
+  SHIPPED: "Pronto para retirada",
+  DELIVERED: "Retirado",
   CANCELED: "Cancelado",
 };
 

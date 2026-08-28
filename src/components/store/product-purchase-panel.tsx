@@ -4,7 +4,6 @@ import { useMemo, useRef, useState } from "react";
 import { useToast } from "@/components/ui/toast";
 import { RequiredMark } from "@/components/ui/required-mark";
 import { readCart, writeCart } from "@/lib/cart";
-import { formatPostalCode } from "@/lib/masks";
 
 type ProductVariantOption = {
   id: string;
@@ -15,7 +14,6 @@ type ProductVariantOption = {
 };
 
 type ProductPurchasePanelProps = {
-  initialPostalCode?: string;
   product: {
     id: string;
     slug: string;
@@ -34,14 +32,13 @@ function colorKey(variant: ProductVariantOption) {
   return variant.color?.trim().toLocaleLowerCase("pt-BR") || "__sem-cor__";
 }
 
-export function ProductPurchasePanel({ initialPostalCode, product, variants }: ProductPurchasePanelProps) {
+export function ProductPurchasePanel({ product, variants }: ProductPurchasePanelProps) {
   const { showToast } = useToast();
   const sizeGuideRef = useRef<HTMLDialogElement>(null);
   const firstAvailable = variants.find((variant) => variant.stockQuantity > 0);
   const [selectedColorKey, setSelectedColorKey] = useState(() => firstAvailable ? colorKey(firstAvailable) : variants[0] ? colorKey(variants[0]) : "__sem-cor__");
   const [selectedId, setSelectedId] = useState(firstAvailable?.id ?? "");
   const [quantity, setQuantity] = useState(1);
-  const [cep, setCep] = useState(() => formatPostalCode(initialPostalCode ?? ""));
   const selectedVariant = useMemo(() => variants.find((variant) => variant.id === selectedId), [selectedId, variants]);
   const colors = useMemo(() => {
     const uniqueColors = new Map<string, { key: string; name: string | null; hex: string | null; available: boolean }>();
@@ -106,14 +103,6 @@ export function ProductPurchasePanel({ initialPostalCode, product, variants }: P
     showToast(nextQuantity === currentQuantity
       ? { message: "Todo o estoque disponível já está no carrinho.", variant: "warning" }
       : { message: "Produto adicionado ao carrinho.", variant: "success" });
-  }
-
-  function calculateShipping(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const digits = cep.replace(/\D/g, "");
-    showToast(digits.length === 8
-      ? { title: "Frete calculado", message: "Frete grátis na simulação · entrega estimada em 4 a 8 dias úteis.", variant: "success" }
-      : { message: "Informe um CEP com 8 números.", variant: "error" });
   }
 
   return (
@@ -206,26 +195,18 @@ export function ProductPurchasePanel({ initialPostalCode, product, variants }: P
       <button className="focus-ring mt-4 min-h-14 w-full rounded-full bg-domary-yellow px-6 text-sm font-semibold text-domary-black transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-black/10 disabled:text-black/35" disabled={!totalStock} onClick={addToCart} type="button">
         {totalStock ? "Adicionar ao carrinho" : "Produto esgotado"}
       </button>
-      <form className="mt-5 border-t border-black/10 pt-5" onSubmit={calculateShipping}>
-        <div className="flex items-center justify-between gap-3"><label className="text-sm font-normal" htmlFor="shipping-cep">Calcular frete</label><span className="text-[10px] font-semibold tracking-wide text-emerald-700 uppercase">Simulação</span></div>
-        <div className="mt-3 flex gap-2">
-          <input
-            autoComplete="postal-code"
-            className="focus-ring min-h-12 min-w-0 flex-1 rounded-xl border border-black/15 bg-white px-4 text-sm"
-            id="shipping-cep"
-            inputMode="numeric"
-            maxLength={9}
-            name="postalCode"
-            onChange={(event) => setCep(formatPostalCode(event.target.value))}
-            placeholder="00000-000"
-            value={cep}
-          />
-          <button className="focus-ring rounded-xl border border-black px-4 text-xs font-semibold" type="submit">Calcular</button>
+      <div className="mt-5 rounded-2xl border border-domary-yellow/45 bg-domary-yellow/[0.09] p-4">
+        <div className="flex items-start gap-3">
+          <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-full bg-domary-yellow text-lg font-black">⌂</span>
+          <div>
+            <p className="text-sm font-black">Retirada na loja disponível</p>
+            <p className="mt-1 text-xs leading-5 text-black/55">A entrega está temporariamente indisponível. Após o pagamento, aguarde a confirmação de que seu pedido está pronto para retirada.</p>
+          </div>
         </div>
-      </form>
+      </div>
 
       <div className="mt-4 divide-y divide-black/10 border-y border-black/10">
-        <details className="group py-4"><summary className="focus-ring flex cursor-pointer list-none items-center justify-between text-sm font-semibold">Entrega e devoluções <span className="text-xl font-light group-open:rotate-45">+</span></summary><p className="pt-3 text-xs leading-5 text-black/55">Envio para todo o Brasil e troca facilitada em até 30 dias após o recebimento.</p></details>
+        <details className="group py-4"><summary className="focus-ring flex cursor-pointer list-none items-center justify-between text-sm font-semibold">Retirada e devoluções <span className="text-xl font-light group-open:rotate-45">+</span></summary><p className="pt-3 text-xs leading-5 text-black/55">No momento, compras online estão disponíveis somente para retirada na loja. Para devoluções, consulte nossa política e fale com o atendimento.</p></details>
         <details className="group py-4"><summary className="focus-ring flex cursor-pointer list-none items-center justify-between text-sm font-semibold">Cuidados com a peça <span className="text-xl font-light group-open:rotate-45">+</span></summary><p className="pt-3 text-xs leading-5 text-black/55">Siga as instruções da etiqueta para preservar cores, tecido e acabamento por mais tempo.</p></details>
       </div>
 

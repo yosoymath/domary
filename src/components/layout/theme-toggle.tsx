@@ -5,6 +5,11 @@ import { createPortal } from "react-dom";
 
 const THEME_STORAGE_KEY = "domary-theme";
 const THEME_CHANGE_EVENT = "domary:theme-change";
+const THEME_COLOR_TRANSITION_DURATION = 180;
+
+let themeColorFrame: number | undefined;
+let themeColorTimer: number | undefined;
+let pendingTheme: boolean | undefined;
 
 type ThemeToggleProps = {
   variant?: "header" | "floating";
@@ -29,10 +34,33 @@ function SunIcon() {
 
 function applyTheme(dark: boolean) {
   const root = document.documentElement;
-  root.classList.add("theme-changing");
-  root.classList.toggle("dark", dark);
-  root.style.colorScheme = dark ? "dark" : "light";
-  window.setTimeout(() => root.classList.remove("theme-changing"), 220);
+  if (pendingTheme === dark || (pendingTheme === undefined && root.classList.contains("dark") === dark)) return;
+
+  const updateTheme = () => {
+    root.classList.toggle("dark", dark);
+    root.style.colorScheme = dark ? "dark" : "light";
+    window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: { dark } }));
+  };
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    updateTheme();
+    return;
+  }
+
+  pendingTheme = dark;
+  root.classList.add("theme-color-transition");
+  if (themeColorFrame !== undefined) window.cancelAnimationFrame(themeColorFrame);
+  if (themeColorTimer !== undefined) window.clearTimeout(themeColorTimer);
+
+  themeColorFrame = window.requestAnimationFrame(() => {
+    updateTheme();
+    themeColorTimer = window.setTimeout(() => {
+      root.classList.remove("theme-color-transition");
+      pendingTheme = undefined;
+      themeColorTimer = undefined;
+    }, THEME_COLOR_TRANSITION_DURATION);
+    themeColorFrame = undefined;
+  });
 }
 
 export function ThemeToggle({ variant = "header" }: ThemeToggleProps) {
@@ -48,7 +76,6 @@ export function ThemeToggle({ variant = "header" }: ThemeToggleProps) {
       if (event.key !== THEME_STORAGE_KEY) return;
       const nextDark = event.newValue === "dark";
       applyTheme(nextDark);
-      setDark(nextDark);
     };
 
     const syncSamePageTheme = (event: Event) => {
@@ -68,8 +95,6 @@ export function ThemeToggle({ variant = "header" }: ThemeToggleProps) {
     const nextDark = !dark;
     applyTheme(nextDark);
     localStorage.setItem(THEME_STORAGE_KEY, nextDark ? "dark" : "light");
-    setDark(nextDark);
-    window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: { dark: nextDark } }));
   };
 
   const label = dark ? "Ativar modo claro" : "Ativar modo noturno";
@@ -84,7 +109,7 @@ export function ThemeToggle({ variant = "header" }: ThemeToggleProps) {
       title={label}
       type="button"
     >
-      <span className={mounted ? "" : "opacity-0"}>{dark ? <SunIcon /> : <MoonIcon />}</span>
+      <span className={`theme-toggle-icon ${mounted ? "" : "opacity-0"}`}>{dark ? <SunIcon /> : <MoonIcon />}</span>
     </button>
   );
 
