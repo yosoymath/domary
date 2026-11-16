@@ -22,7 +22,6 @@ function ArrowIcon() {
 }
 
 export default async function Home() {
-  const user = await getCurrentUser();
   const now = new Date();
   const activePromotionWhere: Prisma.PromotionWhereInput = {
     isActive: true,
@@ -31,27 +30,43 @@ export default async function Home() {
       { OR: [{ endsAt: null }, { endsAt: { gte: now } }] },
     ],
   };
-  const catalogProducts = await prisma.product.findMany({
-    where: { status: "ACTIVE" },
-    select: {
-      id: true,
-      slug: true,
-      name: true,
-      price: true,
-      compareAtPrice: true,
-      isFeatured: true,
-      images: { orderBy: { position: "asc" }, take: 1, select: { url: true } },
-      promotions: { where: activePromotionWhere, select: { percentage: true } },
-      category: {
-        select: {
-          name: true,
-          promotions: { where: activePromotionWhere, select: { percentage: true } },
+  const [user, catalogProducts, catalogCategories] = await Promise.all([
+    getCurrentUser(),
+    prisma.product.findMany({
+      where: { status: "ACTIVE" },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        price: true,
+        compareAtPrice: true,
+        isFeatured: true,
+        images: { orderBy: { position: "asc" }, take: 1, select: { url: true } },
+        promotions: { where: activePromotionWhere, select: { percentage: true } },
+        category: {
+          select: {
+            name: true,
+            promotions: { where: activePromotionWhere, select: { percentage: true } },
+          },
         },
       },
-    },
-    orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
-    take: 4,
-  });
+      orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+      take: 4,
+    }),
+    prisma.category.findMany({
+      where: { isActive: true, products: { some: { status: "ACTIVE" } } },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        imageUrl: true,
+        _count: { select: { products: { where: { status: "ACTIVE" } } } },
+      },
+      orderBy: { name: "asc" },
+      take: 6,
+    }),
+  ]);
   const favoriteIds = user && catalogProducts.length
     ? new Set((await prisma.favorite.findMany({
         where: { userId: user.id, productId: { in: catalogProducts.map((product) => product.id) } },
@@ -92,116 +107,118 @@ export default async function Home() {
 
   return (
     <>
-      <section id="novidades" className="relative isolate overflow-hidden bg-domary-black text-white">
+      <section id="novidades" className="relative isolate overflow-hidden bg-[#111111] text-white">
         <div aria-hidden="true" className="absolute inset-0">
-          <img alt="" className="size-full object-cover object-[86%_center] sm:object-[78%_center] lg:object-[70%_center]" decoding="async" fetchPriority="high" src="/media/domary-ice-hero-static.webp" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,8,8,0.98)_0%,rgba(8,8,8,0.9)_32%,rgba(8,8,8,0.52)_58%,rgba(8,8,8,0.08)_100%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/45 to-transparent" />
+          <img alt="" className="size-full object-cover object-[86%_center] sm:object-[80%_center] lg:object-[70%_center]" decoding="async" fetchPriority="high" src="/media/domary-ice-hero-static.webp" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(17,17,17,0.92)_0%,rgba(17,17,17,0.7)_40%,rgba(17,17,17,0.1)_80%)]" />
         </div>
 
-        <div className="relative mx-auto flex min-h-[580px] max-w-7xl items-center px-4 py-12 sm:min-h-[620px] sm:px-6 sm:py-16 lg:px-8">
-          <div className="max-w-3xl">
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-2 text-[10px] font-bold tracking-[0.18em] uppercase sm:text-xs">
-              <span className="size-2 rounded-full bg-domary-yellow" />
-              Drop 01 — Essenciais urbanos
-            </div>
-            <h1 className="max-w-3xl text-5xl leading-[0.92] font-black tracking-[-0.07em] uppercase sm:text-6xl lg:text-8xl">
-              Vista sua <span className="text-domary-yellow">atitude.</span>
-            </h1>
-            <p className="mt-6 max-w-xl text-base leading-7 text-white/65 sm:text-lg">
-              Roupas e acessórios para quem transforma o básico em presença. Design marcante, conforto real e personalidade em cada detalhe.
-            </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link className="focus-ring inline-flex items-center justify-center gap-3 rounded-full bg-domary-yellow px-7 py-4 text-sm font-black text-domary-black transition-transform hover:-translate-y-0.5" href="#produtos">
-                Comprar agora <ArrowIcon />
-              </Link>
-              <Link className="focus-ring inline-flex items-center justify-center rounded-full border border-white/30 px-7 py-4 text-sm font-bold transition-colors hover:bg-white hover:text-domary-black" href="#categorias">
-                Explorar coleção
-              </Link>
-            </div>
+        <div className="relative mx-auto flex min-h-[560px] max-w-7xl flex-col justify-center px-4 py-20 sm:px-6 lg:min-h-[640px] lg:px-8">
+          <p className="eyebrow">Coleção atual</p>
+          <h1 className="display mt-5 max-w-2xl text-[clamp(3rem,8vw,6rem)]">
+            Vista sua <span className="text-domary-yellow">atitude.</span>
+          </h1>
+          <p className="mt-6 max-w-md text-base leading-7 text-white/70">
+            Roupas e acessórios com design marcante e conforto real. Compre online e retire na loja.
+          </p>
+          <div className="mt-10 flex flex-wrap items-center gap-6">
+            <Link className="btn btn-primary focus-ring" href="/produtos">Ver a loja</Link>
+            <Link className="link-arrow focus-ring text-white/85" href="#categorias">Categorias <ArrowIcon /></Link>
           </div>
         </div>
       </section>
 
-      <section aria-label="Diferenciais Domary" className="border-b border-black/10 bg-white">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-black/10 px-4 sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:px-6 lg:px-8">
-          {[
-            ["01", "Retire na loja", "Sem custo adicional"],
-            ["02", "Compra segura", "Seus dados protegidos"],
-            ["03", "Troca fácil", "Até 30 dias"],
-          ].map(([number, title, text]) => (
-            <div className="flex items-center gap-4 py-6 sm:px-6" key={number}>
-              <span className="text-2xl font-black text-domary-yellow">{number}</span>
-              <div><p className="text-sm font-semibold">{title}</p><p className="text-xs text-black/50">{text}</p></div>
-            </div>
+      <section aria-label="Diferenciais Domary" className="border-b border-black/8">
+        <ul className="mx-auto grid max-w-7xl gap-4 px-4 py-6 text-sm text-black/60 sm:grid-cols-3 sm:px-6 lg:px-8">
+          {["Retirada grátis na loja", "Pagamento seguro em até 3x", "Trocas em até 30 dias"].map((item) => (
+            <li className="flex items-center gap-2.5" key={item}>
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-domary-yellow" />
+              {item}
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
-      <section id="categorias" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section id="categorias" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
         <div className="mb-10 flex items-end justify-between gap-6">
-          <div>
-            <p className="text-xs font-semibold tracking-[0.2em] text-black/45 uppercase">Encontre seu estilo</p>
-            <h2 className="mt-2 text-4xl font-black tracking-[-0.05em] uppercase sm:text-5xl">Categorias</h2>
-          </div>
+          <h2 className="display text-4xl sm:text-5xl">Categorias</h2>
+          <Link className="link-arrow focus-ring text-black/70" href="/produtos">Ver tudo <ArrowIcon /></Link>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Link className="focus-ring group relative min-h-80 overflow-hidden rounded-[2rem] bg-domary-yellow p-7 sm:p-10" href="/produtos?colecao=roupas">
-            <div className="absolute -bottom-24 -right-12 size-80 rounded-full bg-white/25 transition-transform duration-500 group-hover:scale-110" />
-            <span className="relative text-xs font-semibold tracking-[0.2em] uppercase">Coleção 2026</span>
-            <h3 className="relative mt-3 text-5xl font-black tracking-[-0.06em] uppercase sm:text-6xl">Roupas</h3>
-            <span className="absolute bottom-8 left-7 inline-flex items-center gap-2 text-sm font-semibold sm:left-10">Explorar <ArrowIcon /></span>
-            <svg aria-hidden="true" className="absolute bottom-0 right-3 h-64 w-52 transition-transform duration-500 group-hover:translate-x-2" viewBox="0 0 200 250">
-              <path d="m59 24 41 15 41-15 42 30-25 43-22-12v159H64V85L42 97 17 54l42-30Z" fill="#151515" />
-              <path d="M76 31c4 27 44 27 48 0" fill="none" stroke="#F5C400" strokeWidth="7" />
-            </svg>
-          </Link>
+        {catalogCategories.length ? (
+          <div className={`grid gap-4 ${catalogCategories.length === 1 ? "" : catalogCategories.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
+            {catalogCategories.map((category) => {
+              const productLabel = `${category._count.products} ${category._count.products === 1 ? "produto" : "produtos"}`;
 
-          <Link className="focus-ring group relative min-h-80 overflow-hidden rounded-[2rem] bg-domary-black p-7 text-white sm:p-10" href="/produtos?colecao=acessorios">
-            <div className="absolute -right-14 -top-16 size-64 rounded-full border-[36px] border-white/5" />
-            <span className="relative text-xs font-semibold tracking-[0.2em] text-domary-yellow uppercase">Detalhes que marcam</span>
-            <h3 className="relative mt-3 text-5xl font-black tracking-[-0.06em] uppercase sm:text-6xl">Acessórios</h3>
-            <span className="absolute bottom-8 left-7 inline-flex items-center gap-2 text-sm font-semibold sm:left-10">Explorar <ArrowIcon /></span>
-            <svg aria-hidden="true" className="absolute bottom-1 right-5 h-52 w-52 -rotate-6 transition-transform duration-500 group-hover:rotate-0" viewBox="0 0 200 200">
-              <path d="M49 72h102l13 104H36L49 72Z" fill="#F5C400" />
-              <path d="M70 77V60c0-22 60-22 60 0v17" fill="none" stroke="#F5C400" strokeWidth="10" />
-              <circle cx="75" cy="85" fill="#151515" r="5" /><circle cx="125" cy="85" fill="#151515" r="5" />
-            </svg>
-          </Link>
+              return (
+                <Link
+                  className={`focus-ring group relative flex min-h-56 overflow-hidden rounded-[10px] p-6 ${category.imageUrl ? "bg-[#111111] text-white" : "bg-black/[0.035]"}`}
+                  href={`/produtos?colecao=${encodeURIComponent(category.slug)}`}
+                  key={category.id}
+                >
+                  {category.imageUrl ? (
+                    <>
+                      <img alt="" className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" loading="lazy" src={category.imageUrl} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                    </>
+                  ) : null}
+
+                  <div className="relative mt-auto flex w-full items-end justify-between gap-4">
+                    <div className="min-w-0">
+                      <h3 className="break-words text-xl font-semibold">{category.name}</h3>
+                      <p className="mt-1 text-sm opacity-60">{productLabel}</p>
+                    </div>
+                    <span className="shrink-0 opacity-60 transition-transform duration-300 group-hover:translate-x-1 group-hover:opacity-100"><ArrowIcon /></span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="rounded-[10px] bg-black/[0.035] px-6 py-16 text-center">
+            <h3 className="text-xl font-semibold">O catálogo está sendo preparado</h3>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-black/55">Novas categorias e produtos aparecerão aqui em breve.</p>
+          </div>
+        )}
+      </section>
+
+      <section id="produtos" className="mx-auto max-w-7xl scroll-mt-24 px-4 pb-20 sm:px-6 lg:px-8 lg:pb-24">
+        <div className="mb-10 flex items-end justify-between gap-6">
+          <h2 className="display text-4xl sm:text-5xl">Mais vendidos</h2>
+          <Link className="link-arrow focus-ring text-black/70" href="/produtos">Ver todos <ArrowIcon /></Link>
+        </div>
+
+        <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6">
+          {products.map((product) => <ProductCard {...product} key={product.name} />)}
         </div>
       </section>
 
       <BrandMarquee />
 
-      <section id="produtos" className="bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-          <div className="mb-10 flex items-end justify-between gap-6">
-            <div>
-              <p className="text-xs font-semibold tracking-[0.2em] text-black/45 uppercase">Os favoritos da comunidade</p>
-              <h2 className="mt-2 text-4xl font-black tracking-[-0.05em] uppercase sm:text-5xl">Mais vendidos</h2>
-            </div>
-            <Link className="focus-ring hidden items-center gap-2 border-b-2 border-domary-yellow pb-1 text-sm font-semibold sm:inline-flex" href="/produtos">Ver todos <ArrowIcon /></Link>
-          </div>
-
-          <div className="grid grid-cols-2 gap-x-3 gap-y-10 md:grid-cols-4 md:gap-x-5">
-            {products.map((product) => <ProductCard {...product} key={product.name} />)}
-          </div>
-
-          <Link className="focus-ring mt-10 flex items-center justify-center gap-2 rounded-full border border-black px-6 py-4 text-sm font-semibold sm:hidden" href="/produtos">Ver todos <ArrowIcon /></Link>
-        </div>
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+        <h2 className="display text-4xl sm:text-5xl">Como funciona</h2>
+        <ol className="mt-10 grid gap-10 sm:grid-cols-3">
+          {[
+            ["Escolha", "Filtre por categoria, tamanho e cor e monte o seu carrinho."],
+            ["Pague", "Finalize com segurança pelo PagBank, em até 3x no cartão."],
+            ["Retire", "Aguarde a confirmação de que o pedido está pronto e retire na loja."],
+          ].map(([title, text], index) => (
+            <li className="border-t border-black/10 pt-5" key={title}>
+              <span className="text-sm text-black/40">0{index + 1}</span>
+              <h3 className="mt-3 text-lg font-semibold">{title}</h3>
+              <p className="mt-1.5 text-sm leading-6 text-black/55">{text}</p>
+            </li>
+          ))}
+        </ol>
       </section>
 
-      <section className="bg-domary-yellow px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
-          <p className="text-xs font-semibold tracking-[0.2em] uppercase">Entre para a lista</p>
-          <h2 className="mt-3 text-4xl font-black tracking-[-0.05em] uppercase sm:text-6xl">Novidades primeiro.<br />Sempre.</h2>
-          <p className="mt-4 max-w-xl text-sm leading-6 text-black/65">Receba lançamentos, ofertas exclusivas e conteúdo Domary direto no seu e-mail.</p>
-          <form className="mt-8 flex w-full max-w-xl flex-col gap-2 sm:flex-row">
-            <label className="sr-only" htmlFor="newsletter-email">Seu melhor e-mail</label>
-            <input className="focus-ring min-h-14 flex-1 rounded-full border-2 border-[#111111] bg-[#ffffff] px-6 text-sm text-[#111111] placeholder:text-[#111111]/40" id="newsletter-email" name="email" placeholder="Seu melhor e-mail" type="email" />
-            <button className="focus-ring min-h-14 rounded-full bg-domary-black px-7 text-sm font-black text-white transition-transform hover:-translate-y-0.5" type="submit">Quero receber</button>
-          </form>
+      <section className="border-t border-black/8">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-4 py-16 sm:px-6 md:flex-row md:items-center lg:px-8">
+          <div>
+            <h2 className="display text-3xl sm:text-4xl">Novidades primeiro.</h2>
+            <p className="mt-2 text-sm text-black/55">Crie sua conta para salvar favoritos e acompanhar seus pedidos.</p>
+          </div>
+          <Link className="btn btn-ink focus-ring" href={user ? "/account" : "/register"}>{user ? "Minha conta" : "Criar conta"}</Link>
         </div>
       </section>
     </>

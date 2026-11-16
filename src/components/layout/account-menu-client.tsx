@@ -85,24 +85,24 @@ export function AccountMenuClient({ user, initials, firstName }: AccountMenuClie
         aria-expanded={open}
         aria-haspopup="true"
         aria-label={`Conta de ${user.name}`}
-        className="focus-ring flex cursor-pointer items-center gap-2 rounded-full p-1 transition-colors hover:bg-black/5"
+        className="focus-ring flex cursor-pointer items-center gap-2 rounded-md p-1 transition-colors hover:bg-black/5"
         onClick={() => setOpen((current) => !current)}
         ref={triggerRef}
         type="button"
       >
-        <span className="grid size-9 place-items-center rounded-full bg-domary-yellow text-xs font-black text-domary-black">{initials}</span>
+        <span className="grid size-8 place-items-center rounded-full bg-domary-yellow text-[11px] font-semibold text-domary-black">{initials}</span>
         <span className="hidden max-w-24 truncate text-left text-xs font-bold xl:block">Olá, {firstName}</span>
         <span className="hidden xl:block"><ChevronIcon open={open} /></span>
       </button>
 
       {open ? (
         <div
-          className="account-menu-popover fixed inset-x-4 top-[8.75rem] z-50 max-h-[calc(100dvh-9.75rem)] w-auto overflow-y-auto overflow-x-hidden rounded-3xl border border-black/10 bg-white text-black shadow-2xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-[calc(100%+0.75rem)] sm:max-h-[calc(100dvh-6rem)] sm:w-[min(22rem,calc(100vw-2rem))]"
+          className="account-menu-popover fixed inset-x-4 top-[6.75rem] z-50 max-h-[calc(100dvh-9.75rem)] w-auto overflow-y-auto overflow-x-hidden rounded-xl border border-black/10 bg-white text-black shadow-2xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-[calc(100%+0.75rem)] sm:max-h-[calc(100dvh-6rem)] sm:w-[min(22rem,calc(100vw-2rem))]"
           id="account-menu-popover"
         >
           <div className="border-b border-black/8 bg-domary-black px-5 py-5 text-white">
             <div className="flex items-center gap-3">
-              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-domary-yellow text-sm font-black text-domary-black">{initials}</span>
+              <span className="grid size-11 shrink-0 place-items-center rounded-md bg-domary-yellow text-sm font-black text-domary-black">{initials}</span>
               <div className="min-w-0">
                 <p className="truncate text-sm font-extrabold">{user.name}</p>
                 <p className="truncate text-xs text-white/55">{user.email}</p>

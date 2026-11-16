@@ -88,7 +88,7 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
 
       <dialog
         aria-label={`Foto ampliada de ${productName}`}
-        className="m-0 h-[100dvh] max-h-none w-screen max-w-none overflow-hidden border-0 bg-transparent p-0 text-white outline-none backdrop:bg-black/10 backdrop:backdrop-blur-xl"
+        className="m-0 h-[100dvh] max-h-none w-screen max-w-none overflow-hidden border-0 bg-transparent p-0 text-white outline-none backdrop:bg-black/90"
         onClick={(event) => {
           if (event.target === event.currentTarget) event.currentTarget.close();
         }}

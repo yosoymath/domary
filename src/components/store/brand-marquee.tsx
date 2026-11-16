@@ -5,8 +5,7 @@ import styles from "./brand-marquee.module.css";
 
 type Brand = {
   name: string;
-  detail?: string;
-  logo?: string;
+  logo: string;
 };
 
 const brands: readonly Brand[] = [
@@ -14,39 +13,18 @@ const brands: readonly Brand[] = [
   { name: "Individual", logo: "/media/brands/individual.jpg" },
   { name: "Acostamento", logo: "/media/brands/acostamento.png" },
   { name: "Hering", logo: "/media/brands/hering.png" },
-  {
-    name: "Pit Bull",
-    detail: "Jeans & Alfaiataria",
-    logo: "/media/brands/pitbull jeans.png",
-  },
+  { name: "Pit Bull", logo: "/media/brands/pitbull jeans.png" },
   { name: "King Joe", logo: "/media/brands/kingjoe-seeklogo.png" },
-  {
-    name: "Crocker",
-    detail: "Jeans",
-    logo: "/media/brands/crocker jeans.png",
-  },
+  { name: "Crocker", logo: "/media/brands/crocker jeans.png" },
   { name: "Departamento", logo: "/media/brands/departamento.png" },
-  {
-    name: "Highstil",
-    detail: "Jeans & Alfaiataria",
-    logo: "/media/brands/highstil.png",
-  },
-  {
-    name: "Resumo",
-    detail: "Jeans & Alfaiataria",
-    logo: "/media/brands/resumo.jpg",
-  },
-  { name: "Lopper", detail: "Jeans", logo: "/media/brands/loopper.png" },
-  { name: "Ognus", detail: "Jeans", logo: "/media/brands/ognus.png" },
+  { name: "Highstil", logo: "/media/brands/highstil.png" },
+  { name: "Resumo", logo: "/media/brands/resumo.jpg" },
+  { name: "Lopper", logo: "/media/brands/loopper.png" },
+  { name: "Ognus", logo: "/media/brands/ognus.png" },
   { name: "Sallo", logo: "/media/brands/sallo-seeklogo.png" },
-  { name: "D&0" },
-  { name: "Savelli", detail: "Calçados", logo: "/media/brands/savelli.jpg" },
-  { name: "Domary", detail: "Calçados", logo: "/media/brands/domary.png" },
-  {
-    name: "Diamantes",
-    detail: "Lingerie",
-    logo: "/media/brands/diamantes.png",
-  },
+  { name: "Savelli", logo: "/media/brands/savelli.jpg" },
+  { name: "Domary", logo: "/media/brands/domary.png" },
+  { name: "Diamantes", logo: "/media/brands/diamantes.png" },
 ];
 
 function BrandGroup({ hidden = false }: { hidden?: boolean }) {
@@ -54,32 +32,13 @@ function BrandGroup({ hidden = false }: { hidden?: boolean }) {
     <div aria-hidden={hidden || undefined} className={styles.group}>
       {brands.map((brand) => (
         <div
-          aria-label={`${brand.name}${brand.detail ? ` ${brand.detail}` : ""}`}
-          className={`${styles.brand} ${brand.logo ? styles.brandWithLogo : ""}`}
-          key={`${brand.name}-${brand.detail ?? "marca"}`}
+          aria-label={brand.name}
+          className={`${styles.brand} ${styles.brandWithLogo}`}
+          key={brand.name}
         >
-          {brand.logo ? (
-            <>
-              <span aria-hidden="true" className={styles.logoPlate}>
-                <img className={styles.logo} src={brand.logo} alt="" />
-              </span>
-              {brand.detail ? (
-                <span aria-hidden="true" className={styles.logoDetail}>
-                  {brand.detail}
-                </span>
-              ) : null}
-            </>
-          ) : (
-            <>
-              <span aria-hidden="true" className={styles.mark}>
-                {brand.name.slice(0, 2)}
-              </span>
-              <span className={styles.name}>
-                {brand.name}
-                {brand.detail ? <span className={styles.detail}>{brand.detail}</span> : null}
-              </span>
-            </>
-          )}
+          <span aria-hidden="true" className={styles.logoPlate}>
+            <img alt="" className={styles.logo} decoding="async" draggable={false} fetchPriority="low" loading="lazy" src={brand.logo} />
+          </span>
         </div>
       ))}
     </div>
@@ -88,46 +47,105 @@ function BrandGroup({ hidden = false }: { hidden?: boolean }) {
 
 export function BrandMarquee() {
   const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const pointerRef = useRef<{ id: number; x: number } | null>(null);
-  const touchingRef = useRef(false);
   const resumeAutomaticAtRef = useRef(0);
+  const groupWidthRef = useRef(0);
+  const offsetRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
 
-  function normalizePosition(viewport: HTMLDivElement) {
-    const groupWidth = viewport.scrollWidth / 2;
+  function moveTrackTo(offset: number) {
+    const track = trackRef.current;
+    const groupWidth = groupWidthRef.current;
+    if (!track) return;
 
-    if (groupWidth <= 0) return;
-
-    if (viewport.scrollLeft >= groupWidth) {
-      viewport.scrollLeft -= groupWidth;
-    } else if (viewport.scrollLeft <= 0) {
-      viewport.scrollLeft += groupWidth;
+    let normalizedOffset = offset;
+    if (groupWidth > 0) {
+      normalizedOffset %= groupWidth;
+      if (normalizedOffset > 0) normalizedOffset -= groupWidth;
     }
+
+    offsetRef.current = normalizedOffset;
+    track.style.transform = `translate3d(${normalizedOffset}px, 0, 0)`;
   }
 
   useEffect(() => {
     const viewport = viewportRef.current;
-    if (!viewport) return;
+    const track = trackRef.current;
+    if (!viewport || !track) return;
+    const activeViewport = viewport;
+    const activeTrack = track;
 
-    viewport.scrollLeft = viewport.scrollWidth / 2;
+    let animationFrame: number | null = null;
+    let previousFrameTime = 0;
+    let isVisible = false;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    const movementInterval = window.setInterval(() => {
-      if (
-        !pointerRef.current &&
-        !touchingRef.current &&
-        Date.now() >= resumeAutomaticAtRef.current
-      ) {
-        viewport.scrollLeft += 0.8;
-        normalizePosition(viewport);
+    function measureGroups() {
+      groupWidthRef.current = activeTrack.scrollWidth / 2;
+      moveTrackTo(offsetRef.current);
+    }
+
+    function stopAutomaticMovement() {
+      if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
+      animationFrame = null;
+      previousFrameTime = 0;
+    }
+
+    function moveAutomatically(time: number) {
+      if (!isVisible || document.hidden || reducedMotion.matches) {
+        stopAutomaticMovement();
+        return;
       }
-    }, 24);
 
-    return () => window.clearInterval(movementInterval);
+      if (previousFrameTime > 0) {
+        const elapsed = Math.min(time - previousFrameTime, 50);
+        if (!pointerRef.current && Date.now() >= resumeAutomaticAtRef.current) {
+          moveTrackTo(offsetRef.current - elapsed * 0.03);
+        }
+      }
+
+      previousFrameTime = time;
+      animationFrame = window.requestAnimationFrame(moveAutomatically);
+    }
+
+    function startAutomaticMovement() {
+      if (animationFrame !== null || !isVisible || document.hidden || reducedMotion.matches) return;
+      animationFrame = window.requestAnimationFrame(moveAutomatically);
+    }
+
+    function handleVisibilityChange() {
+      if (document.hidden) stopAutomaticMovement();
+      else startAutomaticMovement();
+    }
+
+    measureGroups();
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) startAutomaticMovement();
+        else stopAutomaticMovement();
+      },
+      { rootMargin: "120px" },
+    );
+
+    visibilityObserver.observe(activeViewport);
+    window.addEventListener("resize", measureGroups, { passive: true });
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    reducedMotion.addEventListener("change", handleVisibilityChange);
+
+    return () => {
+      stopAutomaticMovement();
+      visibilityObserver.disconnect();
+      window.removeEventListener("resize", measureGroups);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      reducedMotion.removeEventListener("change", handleVisibilityChange);
+    };
   }, []);
 
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
     const viewport = viewportRef.current;
-    if (!viewport || event.pointerType === "touch") return;
+    if (!viewport) return;
 
     pointerRef.current = {
       id: event.pointerId,
@@ -139,17 +157,14 @@ export function BrandMarquee() {
   }
 
   function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
-    const viewport = viewportRef.current;
     const pointer = pointerRef.current;
     if (
-      !viewport ||
       !pointer ||
       pointer.id !== event.pointerId
     ) return;
 
-    viewport.scrollLeft -= event.clientX - pointer.x;
+    moveTrackTo(offsetRef.current + event.clientX - pointer.x);
     pointer.x = event.clientX;
-    normalizePosition(viewport);
   }
 
   function finishDragging(event: React.PointerEvent<HTMLDivElement>) {
@@ -161,34 +176,16 @@ export function BrandMarquee() {
     }
 
     pointerRef.current = null;
+    resumeAutomaticAtRef.current = Date.now() + 600;
     setIsDragging(false);
   }
 
-  function handleTouchStart() {
-    touchingRef.current = true;
-    resumeAutomaticAtRef.current = Number.POSITIVE_INFINITY;
-  }
-
-  function handleTouchEnd() {
-    touchingRef.current = false;
-    resumeAutomaticAtRef.current = Date.now() + 600;
-  }
-
-  function handleScroll() {
-    const resumeAt = resumeAutomaticAtRef.current;
-
-    if (resumeAt === Number.POSITIVE_INFINITY || resumeAt > Date.now()) {
-      resumeAutomaticAtRef.current = Date.now() + 350;
-    }
-  }
-
   function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
-    const viewport = viewportRef.current;
-    if (!viewport || (event.key !== "ArrowLeft" && event.key !== "ArrowRight")) return;
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
 
     event.preventDefault();
-    viewport.scrollLeft += event.key === "ArrowRight" ? 240 : -240;
-    normalizePosition(viewport);
+    moveTrackTo(offsetRef.current + (event.key === "ArrowRight" ? -240 : 240));
+    resumeAutomaticAtRef.current = Date.now() + 600;
   }
 
   return (
@@ -208,15 +205,11 @@ export function BrandMarquee() {
           onLostPointerCapture={finishDragging}
           onPointerMove={handlePointerMove}
           onPointerUp={finishDragging}
-          onScroll={handleScroll}
-          onTouchCancel={handleTouchEnd}
-          onTouchEnd={handleTouchEnd}
-          onTouchStart={handleTouchStart}
           ref={viewportRef}
           role="region"
           tabIndex={0}
         >
-          <div className={styles.track}>
+          <div className={styles.track} ref={trackRef}>
             <BrandGroup />
             <BrandGroup hidden />
           </div>

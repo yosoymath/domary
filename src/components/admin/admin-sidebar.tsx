@@ -53,8 +53,9 @@ export function AdminSidebar({ name }: { name: string }) {
     <aside className="bg-domary-black text-white lg:sticky lg:top-0 lg:flex lg:h-dvh lg:min-h-0 lg:flex-col lg:overflow-y-auto">
       <div className="flex items-center justify-between gap-4 border-b border-white/10 py-5 pl-5 pr-16 lg:px-6 lg:py-6">
         <div className="min-w-0">
-          <Link aria-label="Voltar para a loja" className="focus-ring inline-flex text-2xl font-black tracking-[-0.06em] uppercase" href="/">
-            Domary<span className="text-domary-yellow">.</span>
+          <Link aria-label="Voltar para a loja" className="focus-ring inline-flex items-center gap-1.5" href="/">
+            <span className="display text-3xl">Domary</span>
+            <span aria-hidden="true" className="mt-1.5 size-2 bg-domary-yellow" />
           </Link>
           <p className="mt-1 text-[9px] font-bold tracking-[0.2em] text-white/35 uppercase">Painel administrativo</p>
         </div>

@@ -161,7 +161,7 @@ export function ProductPurchasePanel({ product, variants }: ProductPurchasePanel
             return (
               <button
                 aria-pressed={selected}
-                className={`focus-ring relative min-h-11 rounded-xl border px-2 text-xs font-semibold transition-colors ${selected ? "border-domary-black bg-domary-black text-white" : "border-black/15 bg-white hover:border-black"} disabled:cursor-not-allowed disabled:bg-black/[0.035] disabled:text-black/25`}
+                className={`focus-ring relative min-h-11 rounded-xl border px-2 text-xs font-semibold transition-colors ${selected ? "border-[#111111] bg-[#111111] text-white" : "border-black/15 bg-white hover:border-black"} disabled:cursor-not-allowed disabled:bg-black/[0.035] disabled:text-black/25`}
                 disabled={unavailable}
                 key={variant.id}
                 onClick={() => selectVariant(variant.id)}
@@ -192,12 +192,12 @@ export function ProductPurchasePanel({ product, variants }: ProductPurchasePanel
         </div>
       ) : null}
 
-      <button className="focus-ring mt-4 min-h-14 w-full rounded-full bg-domary-yellow px-6 text-sm font-semibold text-domary-black transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-black/10 disabled:text-black/35" disabled={!totalStock} onClick={addToCart} type="button">
+      <button className="btn btn-primary focus-ring mt-4 min-h-14 w-full disabled:cursor-not-allowed disabled:bg-black/10 disabled:text-black/35 disabled:shadow-none" disabled={!totalStock} onClick={addToCart} type="button">
         {totalStock ? "Adicionar ao carrinho" : "Produto esgotado"}
       </button>
       <div className="mt-5 rounded-2xl border border-domary-yellow/45 bg-domary-yellow/[0.09] p-4">
         <div className="flex items-start gap-3">
-          <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-full bg-domary-yellow text-lg font-black">⌂</span>
+          <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-md bg-domary-yellow text-lg font-black text-[#111111]">⌂</span>
           <div>
             <p className="text-sm font-black">Retirada na loja disponível</p>
             <p className="mt-1 text-xs leading-5 text-black/55">A entrega está temporariamente indisponível. Após o pagamento, aguarde a confirmação de que seu pedido está pronto para retirada.</p>
@@ -212,7 +212,7 @@ export function ProductPurchasePanel({ product, variants }: ProductPurchasePanel
 
       <dialog
         aria-labelledby="size-guide-title"
-        className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl overflow-hidden rounded-[1.75rem] bg-white p-0 text-black shadow-2xl backdrop:bg-black/65 backdrop:backdrop-blur-sm"
+        className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl overflow-hidden rounded-[10px] bg-white p-0 text-black shadow-2xl backdrop:bg-black/70"
         onClick={(event) => {
           if (event.target === event.currentTarget) event.currentTarget.close();
         }}

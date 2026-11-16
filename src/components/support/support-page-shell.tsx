@@ -17,18 +17,16 @@ type SupportPageShellProps = {
 export function SupportPageShell({ activePath, eyebrow, title, description, children }: SupportPageShellProps) {
   return (
     <div className="bg-domary-cream">
-      <section className="relative isolate overflow-hidden bg-domary-black px-4 py-14 text-white sm:px-6 sm:py-20 lg:px-8">
-        <div aria-hidden="true" className="absolute -left-24 top-1/2 size-64 -translate-y-1/2 rounded-full border-[42px] border-domary-yellow/10" />
-        <div aria-hidden="true" className="absolute -right-24 -top-24 size-72 rounded-full bg-domary-yellow/10 blur-3xl" />
+      <section className="border-b border-black/8 px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <div className="relative mx-auto max-w-7xl">
-          <nav aria-label="Navegação estrutural" className="flex items-center gap-2 text-xs font-bold text-white/45">
-            <Link className="focus-ring hover:text-white" href="/">Início</Link>
+          <nav aria-label="Navegação estrutural" className="flex items-center gap-2 text-xs text-black/45">
+            <Link className="focus-ring hover:text-black" href="/">Início</Link>
             <span aria-hidden="true">/</span>
-            <span className="text-white/75">Atendimento</span>
+            <span className="text-black/70">Atendimento</span>
           </nav>
-          <p className="mt-10 text-xs font-black tracking-[0.2em] text-domary-yellow uppercase">{eyebrow}</p>
-          <h1 className="mt-3 max-w-4xl text-4xl leading-[0.95] font-black tracking-[-0.055em] uppercase sm:text-6xl">{title}</h1>
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-white/60 sm:text-base">{description}</p>
+          <p className="eyebrow mt-8">{eyebrow}</p>
+          <h1 className="display mt-3 max-w-3xl text-4xl sm:text-5xl">{title}</h1>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-black/55 sm:text-base">{description}</p>
         </div>
       </section>
 

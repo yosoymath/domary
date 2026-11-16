@@ -76,10 +76,9 @@ export function CartPageClient() {
   if (!items.length) {
     return (
       <div className="rounded-[2rem] border border-dashed border-black/15 bg-white px-5 py-16 text-center">
-        <span aria-hidden="true" className="text-6xl font-black text-domary-yellow">0.</span>
-        <h2 className="mt-4 text-2xl font-black">Seu carrinho está vazio</h2>
+        <h2 className="text-xl font-semibold">Seu carrinho está vazio</h2>
         <p className="mt-2 text-sm text-black/50">Explore a vitrine e escolha as peças que combinam com você.</p>
-        <Link className="focus-ring mt-7 inline-flex min-h-12 items-center rounded-full bg-domary-black px-7 text-sm font-black text-white" href="/#produtos">Explorar produtos</Link>
+        <Link className="btn btn-primary focus-ring mt-7" href="/produtos">Explorar produtos</Link>
       </div>
     );
   }
@@ -108,8 +107,8 @@ export function CartPageClient() {
         ))}
       </div>
 
-      <aside className="h-fit rounded-3xl bg-domary-black p-6 text-white lg:sticky lg:top-32">
-        <h2 className="text-xl font-black">Resumo</h2>
+      <aside className="h-fit rounded-[10px] border border-white/10 bg-[#0d0d0c] p-6 text-white lg:sticky lg:top-32">
+        <h2 className="text-lg font-semibold">Resumo</h2>
         <fieldset className="mt-6">
           <legend className="text-xs font-black tracking-wider text-white/55 uppercase">Como você quer receber?</legend>
           <label className="mt-3 flex cursor-default items-start gap-3 rounded-2xl border border-domary-yellow bg-white/[0.06] p-4">
@@ -127,7 +126,7 @@ export function CartPageClient() {
           <p className="text-xs font-black text-domary-yellow uppercase">Importante</p>
           <p className="mt-1.5 text-xs leading-5 text-white/70">No momento, pedidos feitos pelo site estão disponíveis somente para retirada na loja.</p>
         </div>
-        <button className="focus-ring mt-6 min-h-14 w-full rounded-full bg-domary-yellow px-5 text-sm font-black text-black disabled:cursor-wait disabled:opacity-60" disabled={checkingOut} onClick={startCheckout} type="button">{checkingOut ? "Preparando pagamento..." : "Ir para o pagamento"}</button>
+        <button className="btn btn-primary focus-ring mt-6 w-full disabled:cursor-wait disabled:opacity-60" disabled={checkingOut} onClick={startCheckout} type="button">{checkingOut ? "Preparando pagamento..." : "Ir para o pagamento"}</button>
         <p className="mt-4 text-[11px] leading-5 text-white/45">Pagamento seguro no PagBank · Preços e estoque conferidos ao finalizar</p>
       </aside>
     </div>

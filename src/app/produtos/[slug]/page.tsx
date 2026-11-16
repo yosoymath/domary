@@ -90,7 +90,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 function GalleryPlaceholder({ name }: { name: string }) {
   return (
     <div className="grid aspect-square place-items-center bg-domary-yellow/20">
-      <div className="text-center"><span aria-hidden="true" className="text-7xl font-black text-domary-yellow">D.</span><p className="mt-3 text-xs font-medium text-black/40">Imagem de {name}</p></div>
+      <div className="text-center"><span aria-hidden="true" className="display text-8xl text-domary-yellow">D.</span><p className="mt-3 text-xs font-medium text-black/40">Imagem de {name}</p></div>
     </div>
   );
 }
@@ -129,9 +129,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <>
       <div className="border-b border-black/8 bg-white">
-        <nav aria-label="Navegação estrutural" className="mx-auto flex max-w-7xl min-w-0 items-center gap-2 overflow-hidden px-4 py-4 text-[11px] font-bold text-black/45 sm:px-6 lg:px-8">
-          <Link className="focus-ring shrink-0 hover:text-black" href="/">Início</Link><span>/</span>
-          <Link className="focus-ring shrink-0 hover:text-black" href={`/#categorias`}>{product.category.name}</Link><span>/</span>
+        <nav aria-label="Navegação estrutural" className="mx-auto flex max-w-7xl min-w-0 items-center gap-2 overflow-hidden px-4 py-4 text-[11px] font-semibold tracking-[0.12em] text-black/45 uppercase sm:px-6 lg:px-8">
+          <Link className="focus-ring shrink-0 hover:text-black" href="/">Início</Link><span aria-hidden="true">/</span>
+          <Link className="focus-ring shrink-0 hover:text-black" href={`/produtos?colecao=${encodeURIComponent(product.category.slug)}`}>{product.category.name}</Link><span aria-hidden="true">/</span>
           <span className="truncate text-black">{product.name}</span>
         </nav>
       </div>
@@ -147,22 +147,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <aside className="min-w-0 self-start lg:sticky lg:top-32">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <p className="text-xs font-medium tracking-[0.15em] text-black/45 uppercase">{product.category.name}</p>
-                <h1 className="mt-2 text-3xl leading-[1.05] font-bold tracking-[-0.035em] sm:text-4xl">{product.name}</h1>
+                <p className="eyebrow text-black/55">{product.category.name}</p>
+                <h1 className="display mt-3 text-3xl sm:text-4xl">{product.name}</h1>
               </div>
               <form action={toggleFavorite.bind(null, product.id, productPath)}>
-                <button aria-label={favorite ? "Remover dos favoritos" : "Salvar nos favoritos"} className="focus-ring grid size-11 shrink-0 place-items-center rounded-full border border-black/12 bg-white text-xl text-red-600 transition-transform hover:scale-105" title={favorite ? "Remover dos favoritos" : "Salvar nos favoritos"} type="submit">{favorite ? "♥" : "♡"}</button>
+                <button aria-label={favorite ? "Remover dos favoritos" : "Salvar nos favoritos"} className={`focus-ring grid size-11 shrink-0 place-items-center rounded-md border border-black/15 bg-white text-xl transition-transform hover:scale-105 ${favorite ? "text-red-600" : ""}`} title={favorite ? "Remover dos favoritos" : "Salvar nos favoritos"} type="submit">{favorite ? "♥" : "♡"}</button>
               </form>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <span className="text-2xl font-bold">{formatCurrency(pricing.price)}</span>
+            <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-y border-black/10 py-4">
+              <span className="text-2xl font-semibold">{formatCurrency(pricing.price)}</span>
               {pricing.oldPrice ? <span className="text-sm text-black/40 line-through">{formatCurrency(pricing.oldPrice)}</span> : null}
-              {pricing.percentage ? <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">{pricing.percentage}% OFF</span> : null}
+              {pricing.percentage ? <span className="rounded-md bg-domary-yellow px-2 py-0.5 text-xs font-semibold text-[#111111]">-{pricing.percentage}%</span> : null}
             </div>
-            <p className="mt-1 text-xs font-semibold text-black/45">parcele em até 3x no checkout</p>
+            <p className="mt-2 text-xs font-semibold text-black/50">Parcele em até 3x no checkout</p>
 
-            {product.isFeatured ? <div className="mt-5 rounded-xl bg-domary-yellow/15 px-4 py-3 text-xs font-semibold">Destaque Domary · uma das peças favoritas da comunidade</div> : null}
+            {product.isFeatured ? <p className="mt-5 flex items-center gap-2 text-xs text-black/60"><span aria-hidden="true" className="size-1.5 rounded-full bg-domary-yellow" />Destaque Domary · uma das peças favoritas da comunidade</p> : null}
             <p className="mt-6 whitespace-pre-line text-sm leading-6 text-black/65">{product.description}</p>
             <p className={`mt-4 text-xs font-semibold ${totalStock > 0 ? "text-emerald-700" : "text-red-600"}`}>{totalStock > 0 ? `${totalStock} unidades disponíveis` : "Indisponível no momento"}</p>
 
@@ -175,10 +175,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </section>
 
       {relatedProducts.length ? (
-        <section className="border-t border-black/8 bg-domary-cream">
+        <section className="border-t border-black/8">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-            <p className="text-xs font-semibold tracking-[0.18em] text-black/45 uppercase">Você também pode gostar</p>
-            <h2 className="mt-2 text-3xl font-bold tracking-[-0.035em] sm:text-4xl">Mais de {product.category.name}</h2>
+            <p className="eyebrow text-black/55">Você também pode gostar</p>
+            <h2 className="display mt-3 text-3xl sm:text-4xl">Mais de {product.category.name}</h2>
             <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-10 md:grid-cols-4 md:gap-x-5">
               {relatedProducts.map((item, index) => {
                 const itemPercentage = Math.max(0, ...item.promotions.map((promotion) => Number(promotion.percentage)), ...item.category.promotions.map((promotion) => Number(promotion.percentage)));

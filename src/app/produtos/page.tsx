@@ -129,32 +129,35 @@ export default async function ProductsPage({ searchParams }: { searchParams: Cat
   const shapes = ["shirt", "bag", "dress", "cap"] as const;
 
   return (
-    <section className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-        <nav aria-label="Navegação estrutural" className="flex items-center gap-2 text-xs font-medium text-black/40"><Link className="focus-ring hover:text-black" href="/">Início</Link><span>/</span><span className="text-black/70">Produtos</span></nav>
+    <section>
+      <div>
+        <div className="mx-auto max-w-7xl px-4 pb-8 pt-8 sm:px-6 lg:px-8 lg:pt-10">
+          <nav aria-label="Navegação estrutural" className="flex items-center gap-2 text-xs text-black/45"><Link className="focus-ring hover:text-black" href="/">Início</Link><span aria-hidden="true">/</span><span className="text-black/70">Produtos</span></nav>
 
-        <div className="mt-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
-          <div><p className="text-xs font-semibold tracking-[0.18em] text-black/40 uppercase">Catálogo Domary</p><h1 className="mt-2 text-4xl font-bold tracking-[-0.045em] sm:text-5xl">Encontre seu estilo</h1></div>
-          <p className="max-w-md text-sm leading-6 text-black/50">Pesquise por nome, coleção ou cor e refine os resultados usando os filtros.</p>
-        </div>
+          <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_minmax(0,26rem)] lg:items-end">
+            <h1 className="display text-4xl sm:text-5xl">{query ? <>Resultados para “{query}”</> : "Loja"}</h1>
 
-        <form action="/produtos" className="mt-8" method="get">
-          {collection ? <input name="colecao" type="hidden" value={collection} /> : null}
-          {color ? <input name="cor" type="hidden" value={color} /> : null}
-          {size ? <input name="tamanho" type="hidden" value={size} /> : null}
-          {availability ? <input name="disponibilidade" type="hidden" value={availability} /> : null}
-          {rawMinPrice ? <input name="precoMin" type="hidden" value={rawMinPrice} /> : null}
-          {rawMaxPrice ? <input name="precoMax" type="hidden" value={rawMaxPrice} /> : null}
-          {sort ? <input name="ordem" type="hidden" value={sort} /> : null}
-          <label className="sr-only" htmlFor="catalog-search">Pesquisar produtos</label>
-          <div className="relative max-w-2xl">
-            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-black/40"><SearchIcon /></span>
-            <input className="focus-ring min-h-14 w-full rounded-full border border-black/12 bg-domary-cream pl-12 pr-28 text-sm font-normal placeholder:text-black/35" defaultValue={query} id="catalog-search" maxLength={100} name="q" placeholder="Buscar por nome, coleção ou cor" type="search" />
-            <button className="focus-ring absolute bottom-1.5 right-1.5 top-1.5 rounded-full bg-domary-black px-5 text-xs font-semibold text-white" type="submit">Buscar</button>
+            <form action="/produtos" method="get" role="search">
+              {collection ? <input name="colecao" type="hidden" value={collection} /> : null}
+              {color ? <input name="cor" type="hidden" value={color} /> : null}
+              {size ? <input name="tamanho" type="hidden" value={size} /> : null}
+              {availability ? <input name="disponibilidade" type="hidden" value={availability} /> : null}
+              {rawMinPrice ? <input name="precoMin" type="hidden" value={rawMinPrice} /> : null}
+              {rawMaxPrice ? <input name="precoMax" type="hidden" value={rawMaxPrice} /> : null}
+              {sort ? <input name="ordem" type="hidden" value={sort} /> : null}
+              <label className="sr-only" htmlFor="catalog-search">Pesquisar produtos</label>
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-black/40"><SearchIcon /></span>
+                <input className="focus-ring min-h-11 w-full rounded-md bg-black/[0.04] pl-11 pr-4 text-sm placeholder:text-black/40" defaultValue={query} id="catalog-search" maxLength={100} name="q" placeholder="Buscar por nome, coleção ou cor" type="search" />
+                <button className="sr-only" type="submit">Buscar</button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
+      </div>
 
-        <div className="mt-8">
+      <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24">
+        <div>
           <CatalogBrowser
             collections={collections}
             colors={colors}
@@ -168,7 +171,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Cat
               const effectivePrice = promotionPercentage ? Math.round(basePrice * (1 - promotionPercentage / 100) * 100) / 100 : basePrice;
               return <ProductCard badge={promotionPercentage ? `-${promotionPercentage}%` : product.isFeatured ? "Destaque" : undefined} category={product.category.name} imageUrl={product.images[0]?.url} isFavorited={favoriteIds.has(product.id)} key={product.id} name={product.name} oldPrice={promotionPercentage ? formatCurrency(product.price) : product.compareAtPrice ? formatCurrency(product.compareAtPrice) : undefined} price={formatCurrency(effectivePrice)} productId={product.id} productSlug={product.slug} shape={shapes[index % shapes.length]} tone={tones[index % tones.length]} />;
             }) : (
-              <div className="col-span-full rounded-[2rem] border border-dashed border-black/15 bg-domary-cream px-5 py-16 text-center"><span aria-hidden="true" className="text-6xl font-bold text-domary-yellow">0.</span><h2 className="mt-4 text-2xl font-bold">Nenhum produto encontrado</h2><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-black/50">Tente remover alguns filtros ou pesquisar outro nome, coleção ou cor.</p><Link className="focus-ring mt-7 inline-flex min-h-12 items-center rounded-full bg-domary-black px-7 text-sm font-semibold text-white" href="/produtos">Ver todo o catálogo</Link></div>
+              <div className="col-span-full rounded-[10px] bg-black/[0.035] px-5 py-16 text-center"><h2 className="text-xl font-semibold">Nenhum produto encontrado</h2><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-black/50">Tente remover alguns filtros ou pesquisar outro nome, coleção ou cor.</p><Link className="btn btn-ink focus-ring mt-6" href="/produtos">Ver todo o catálogo</Link></div>
             )}
           </CatalogBrowser>
         </div>

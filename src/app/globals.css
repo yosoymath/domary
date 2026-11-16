@@ -36,12 +36,37 @@
   initial-value: rgb(255 255 255 / 90%);
 }
 
+@property --color-domary-yellow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f5c400;
+}
+
+@property --color-domary-yellow-light {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffe266;
+}
+
+@property --color-domary-accent-contrast {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #111111;
+}
+
 @theme {
   --color-domary-yellow: #f5c400;
   --color-domary-yellow-light: #ffe266;
   --color-domary-black: #111111;
   --color-domary-cream: #f8f7f2;
-  --font-sans: Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display-face), var(--font-body), ui-sans-serif, sans-serif;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --radius-2xl: 10px;
+  --radius-3xl: 12px;
 }
 
 :root {
@@ -53,7 +78,15 @@
   --focus-outer: #111111;
   --surface-white: #ffffff;
   --surface-white-90: rgb(255 255 255 / 90%);
+  --color-domary-accent-contrast: #111111;
   color-scheme: light;
+}
+
+:root[data-theme-mode="light"] {
+  --background: #ffffff;
+  --color-domary-cream: #fbfbf8;
+  --surface-white: #ffffff;
+  --surface-white-90: rgb(255 255 255 / 92%);
 }
 
 :root.dark {
@@ -62,7 +95,7 @@
   --color-black: #f4f4f2;
   --color-domary-cream: #121210;
   --focus-inner: #111111;
-  --focus-outer: #f5c400;
+  --focus-outer: var(--color-domary-yellow);
   --surface-white: #1a1a18;
   --surface-white-90: rgb(26 26 24 / 90%);
   color-scheme: dark;
@@ -88,7 +121,8 @@ html.theme-color-transition {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
   margin: 0;
   max-width: 100%;
   min-width: 0;
@@ -147,9 +181,129 @@ a[href]:active {
   transition-duration: 90ms;
 }
 
-::selection {
-  background: #f5c400;
+/* ---------- Sistema visual Domary ---------- */
+
+:root {
+  --radius-control: 6px;
+  --radius-card: 10px;
+}
+
+/* Títulos usam a fonte display condensada da marca. */
+@layer base {
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    font-stretch: 88%;
+  }
+}
+
+:is(h1, h2)[class*="tracking-[-0.0"] {
+  letter-spacing: -0.012em;
+}
+
+/* Botões e campos em formato pílula ganham cantos retos; círculos (size-*) permanecem. */
+[class~="rounded-full"]:not([class*="size-"]) {
+  border-radius: var(--radius-control);
+}
+
+[class*="rounded-[1.7rem]"],
+[class*="rounded-[1.75rem]"],
+[class*="rounded-[2rem]"] {
+  border-radius: var(--radius-card);
+}
+
+@layer components {
+.display {
+  font-family: var(--font-display);
+  font-stretch: 88%;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  --tw-leading: 0.98;
+  line-height: 0.98;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  opacity: 0.6;
+  text-transform: uppercase;
+}
+
+.btn {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  display: inline-flex;
+  font-size: 0.875rem;
+  font-weight: 600;
+  gap: 0.5rem;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+}
+
+.btn-primary {
+  background: var(--color-domary-yellow);
+  color: var(--color-domary-accent-contrast);
+}
+
+.btn-primary:hover {
+  filter: brightness(0.95);
+}
+
+.btn-ink {
+  background: #111111;
+  color: #ffffff;
+}
+
+.btn-ink:hover {
+  background: #2a2a28;
+}
+
+:root.dark .btn-ink {
+  background: #f4f4f2;
   color: #111111;
+}
+
+:root.dark .btn-ink:hover {
+  background: #dcdcd8;
+}
+
+.btn-outline {
+  border-color: color-mix(in srgb, currentColor 25%, transparent);
+}
+
+.btn-outline:hover {
+  border-color: currentColor;
+}
+
+.link-arrow {
+  align-items: center;
+  display: inline-flex;
+  font-size: 0.875rem;
+  font-weight: 600;
+  gap: 0.4rem;
+}
+
+.link-arrow:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+::selection {
+  background: var(--color-domary-yellow);
+  color: var(--color-domary-accent-contrast);
 }
 
 .focus-ring {
@@ -171,7 +325,8 @@ a[href]:active {
 .dark [class~="bg-[#f5f5f5]"],
 .dark [class~="bg-[#f3f3ef]"],
 .dark [class~="bg-[#eae5d8]"],
-.dark [class~="bg-[#fafaf8]"] {
+.dark [class~="bg-[#fafaf8]"],
+.dark [class~="bg-[#f1f0eb]"] {
   background-color: #20201e;
 }
 
@@ -250,13 +405,13 @@ a[href]:active {
   color: #b8b8b3;
 }
 
-.dark [class~="bg-domary-yellow"],
-.dark [class~="bg-domary-yellow"] * {
-  --color-black: #111111;
+[class~="bg-domary-yellow"],
+[class~="bg-domary-yellow"] * {
+  --color-black: var(--color-domary-accent-contrast);
 }
 
-.dark [class~="bg-domary-yellow"] {
-  color: #111111;
+[class~="bg-domary-yellow"] {
+  color: var(--color-domary-accent-contrast);
 }
 
 .theme-toggle-icon {
@@ -264,22 +419,20 @@ a[href]:active {
   transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1), opacity 140ms ease-out;
 }
 
-[data-theme-toggle][aria-pressed="false"] .theme-toggle-icon {
+[data-theme-toggle][data-theme-dark="false"] .theme-toggle-icon {
   transform: rotate(-8deg);
 }
 
-[data-theme-toggle][aria-pressed="true"] .theme-toggle-icon {
+[data-theme-toggle][data-theme-dark="true"] .theme-toggle-icon {
   transform: rotate(8deg);
 }
 
 @keyframes page-enter {
   from {
-    opacity: 0.68;
-    transform: translateY(7px);
+    opacity: 0.92;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -371,13 +524,12 @@ a[href]:active {
 }
 
 .page-transition {
-  animation: page-enter 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  transition: opacity 180ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1), filter 180ms ease;
+  animation: page-enter 160ms ease-out both;
+  transition: opacity 120ms ease-out;
 }
 
 .route-changing .page-transition {
-  opacity: 0.88;
-  transform: translateY(1px) scale(0.999);
+  opacity: 0.96;
 }
 
 .navigation-progress {

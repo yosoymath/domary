@@ -46,7 +46,7 @@ function FilterForm({ collections, colors, sizes, values, formId, onSubmit }: Om
 
       <div className="divide-y divide-black/10 border-y border-black/10">
         <details className="group py-1" open>
-          <summary className="focus-ring flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-semibold">Coleções <span className="transition-transform group-open:rotate-180"><ChevronIcon /></span></summary>
+          <summary className="focus-ring flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-medium">Coleções <span className="transition-transform group-open:rotate-180"><ChevronIcon /></span></summary>
           <div className="space-y-1 pb-4">
             <label className={optionClassName}><input className="size-4 accent-black" defaultChecked={!values.collection} name="colecao" type="radio" value="" />Todas</label>
             {collections.map((item) => <label className={optionClassName} key={item.slug}><input className="size-4 accent-black" defaultChecked={values.collection === item.slug} name="colecao" type="radio" value={item.slug} />{item.name}</label>)}
@@ -54,15 +54,15 @@ function FilterForm({ collections, colors, sizes, values, formId, onSubmit }: Om
         </details>
 
         <details className="group py-1" open={Boolean(values.size)}>
-          <summary className="focus-ring flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-semibold">Tamanho <span className="transition-transform group-open:rotate-180"><ChevronIcon /></span></summary>
+          <summary className="focus-ring flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-medium">Tamanho <span className="transition-transform group-open:rotate-180"><ChevronIcon /></span></summary>
           <div className="grid grid-cols-3 gap-2 pb-4">
-            {sizes.length ? sizes.map((item) => <label className={`cursor-pointer rounded-lg border px-2 py-2 text-center text-xs font-semibold ${values.size === item ? "border-domary-black bg-domary-black text-white" : "border-black/10"}`} key={item}><input className="sr-only" defaultChecked={values.size === item} name="tamanho" type="radio" value={item} />{item}</label>) : <p className="col-span-3 pb-2 text-xs text-black/40">Nenhum tamanho cadastrado.</p>}
+            {sizes.length ? sizes.map((item) => <label className={`cursor-pointer rounded-lg border px-2 py-2 text-center text-xs font-semibold ${values.size === item ? "border-[#111111] bg-[#111111] text-white" : "border-black/10"}`} key={item}><input className="sr-only" defaultChecked={values.size === item} name="tamanho" type="radio" value={item} />{item}</label>) : <p className="col-span-3 pb-2 text-xs text-black/40">Nenhum tamanho cadastrado.</p>}
             {values.size ? <label className="cursor-pointer rounded-lg border border-black/10 px-2 py-2 text-center text-xs font-semibold"><input className="sr-only" name="tamanho" type="radio" value="" />Todos</label> : null}
           </div>
         </details>
 
         <details className="group py-1" open={Boolean(values.color)}>
-          <summary className="focus-ring flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-semibold">Cores <span className="transition-transform group-open:rotate-180"><ChevronIcon /></span></summary>
+          <summary className="focus-ring flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-medium">Cores <span className="transition-transform group-open:rotate-180"><ChevronIcon /></span></summary>
           <div className="space-y-1 pb-4">
             {colors.length ? colors.map((item) => (
               <label className={optionClassName} key={item.name}>
@@ -75,7 +75,7 @@ function FilterForm({ collections, colors, sizes, values, formId, onSubmit }: Om
         </details>
 
         <details className="group py-1" open={values.minPrice !== "" || values.maxPrice !== ""}>
-          <summary className="focus-ring flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-semibold">Preço <span className="transition-transform group-open:rotate-180"><ChevronIcon /></span></summary>
+          <summary className="focus-ring flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-medium">Preço <span className="transition-transform group-open:rotate-180"><ChevronIcon /></span></summary>
           <div className="grid grid-cols-2 gap-2 pb-4">
             <label className="text-[10px] font-semibold tracking-wide text-black/45 uppercase">Mínimo<input className="focus-ring mt-1 min-h-11 w-full min-w-0 rounded-lg border border-black/12 px-3 text-sm font-normal" defaultValue={values.minPrice} min="0" name="precoMin" placeholder="R$ 0" step="0.01" type="number" /></label>
             <label className="text-[10px] font-semibold tracking-wide text-black/45 uppercase">Máximo<input className="focus-ring mt-1 min-h-11 w-full min-w-0 rounded-lg border border-black/12 px-3 text-sm font-normal" defaultValue={values.maxPrice} min="0" name="precoMax" placeholder="R$ 500" step="0.01" type="number" /></label>
@@ -83,7 +83,7 @@ function FilterForm({ collections, colors, sizes, values, formId, onSubmit }: Om
         </details>
 
         <details className="group py-1" open={Boolean(values.availability)}>
-          <summary className="focus-ring flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-semibold">Disponibilidade <span className="transition-transform group-open:rotate-180"><ChevronIcon /></span></summary>
+          <summary className="focus-ring flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-medium">Disponibilidade <span className="transition-transform group-open:rotate-180"><ChevronIcon /></span></summary>
           <div className="space-y-1 pb-4">
             <label className={optionClassName}><input className="size-4 accent-black" defaultChecked={!values.availability} name="disponibilidade" type="radio" value="" />Todos</label>
             <label className={optionClassName}><input className="size-4 accent-black" defaultChecked={values.availability === "disponivel"} name="disponibilidade" type="radio" value="disponivel" />Em estoque</label>
@@ -92,7 +92,7 @@ function FilterForm({ collections, colors, sizes, values, formId, onSubmit }: Om
         </details>
       </div>
 
-      <button className="focus-ring mt-5 min-h-12 w-full rounded-full bg-domary-yellow px-5 text-sm font-semibold" type="submit">Aplicar filtros</button>
+      <button className="btn btn-ink focus-ring mt-5 w-full" type="submit">Aplicar filtros</button>
       <Link className="focus-ring mt-2 flex min-h-11 items-center justify-center rounded-full text-xs font-medium text-black/55 underline underline-offset-4" href="/produtos">Limpar tudo</Link>
     </form>
   );
@@ -119,12 +119,12 @@ export function CatalogBrowser({ children, resultCount, collections, colors, siz
 
   return (
     <>
-      <div className="flex min-w-0 flex-col gap-4 border-y border-black/10 py-5 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-base font-semibold sm:text-lg">Todos os produtos <span className="font-normal text-black/40">({resultCount})</span></p>
+      <div className="-mx-4 flex min-w-0 flex-col gap-3 border-y border-black/8 px-4 py-3 sm:-mx-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:static lg:mx-0 lg:px-0 lg:py-5">
+        <p className="text-sm text-black/55">{resultCount} {resultCount === 1 ? "produto" : "produtos"}</p>
         <div className="flex min-w-0 items-center justify-between gap-2 sm:justify-end sm:gap-5">
-          <button aria-expanded={mobileFiltersOpen || !desktopFiltersHidden} className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-full px-2 text-sm font-medium hover:bg-black/[0.035] sm:px-3" onClick={toggleFilters} type="button">Filtros <SlidersIcon />{activeFilterCount ? <span className="grid size-5 place-items-center rounded-full bg-domary-yellow text-[10px] font-semibold">{activeFilterCount}</span> : null}</button>
-          <label className={`relative flex min-w-0 items-center gap-1 text-sm font-medium ${isPending ? "opacity-50" : ""}`}>Ordenar por
-            <select aria-label="Ordenar produtos" className="focus-ring min-w-0 max-w-36 appearance-none bg-transparent py-3 pl-2 pr-6 text-sm font-normal sm:max-w-none" defaultValue={values.sort} disabled={isPending} onChange={(event) => changeSort(event.target.value)}>
+          <button aria-expanded={mobileFiltersOpen || !desktopFiltersHidden} className="focus-ring inline-flex min-h-10 items-center gap-2 rounded-md px-2 text-sm hover:bg-black/5" onClick={toggleFilters} type="button">Filtros <SlidersIcon />{activeFilterCount ? <span className="grid size-5 place-items-center rounded-full bg-domary-yellow text-[10px] font-semibold">{activeFilterCount}</span> : null}</button>
+          <label className={`relative flex min-w-0 items-center gap-1 text-sm text-black/55 ${isPending ? "opacity-50" : ""}`}>Ordenar
+            <select aria-label="Ordenar produtos" className="focus-ring min-w-0 max-w-36 appearance-none bg-transparent py-2.5 pl-1 pr-6 text-sm text-black sm:max-w-none" defaultValue={values.sort} disabled={isPending} onChange={(event) => changeSort(event.target.value)}>
               <option value="">Destaques</option><option value="menor-preco">Menor preço</option><option value="maior-preco">Maior preço</option><option value="nome">Nome: A–Z</option>
             </select>
             <span className="pointer-events-none absolute right-0"><ChevronIcon /></span>

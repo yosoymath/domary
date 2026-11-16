@@ -33,9 +33,9 @@ export function CartIndicator() {
   const label = count === 1 ? "Carrinho com 1 item" : `Carrinho com ${count} itens`;
 
   return (
-    <Link className="focus-ring relative grid size-10 place-items-center rounded-full bg-domary-yellow transition-transform hover:scale-105" href="/carrinho" aria-label={label}>
+    <Link className="focus-ring relative grid size-10 place-items-center rounded-md hover:bg-black/5" href="/carrinho" aria-label={label}>
       <BagIcon />
-      <span className="absolute -right-1 -top-1 grid size-5 place-items-center rounded-full bg-domary-black text-[10px] font-bold text-white">{count > 99 ? "99+" : count}</span>
+      {count > 0 ? <span className="absolute right-0.5 top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-domary-yellow px-1 text-[10px] font-semibold text-[#111111]">{count > 99 ? "99+" : count}</span> : null}
     </Link>
   );
 }

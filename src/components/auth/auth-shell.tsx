@@ -9,34 +9,34 @@ type AuthShellProps = {
 
 export function AuthShell({ eyebrow, title, description, children }: AuthShellProps) {
   return (
-    <section className="relative isolate overflow-hidden bg-domary-cream px-4 py-14 text-black sm:px-6 sm:py-20 lg:px-8">
-      <div aria-hidden="true" className="absolute -left-28 top-20 size-72 rounded-full border-[44px] border-domary-yellow/10" />
-      <div aria-hidden="true" className="absolute -right-32 bottom-0 size-96 rounded-full bg-domary-yellow/5 blur-3xl" />
-
-      <div className="relative mx-auto grid min-h-[650px] max-w-6xl overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-2xl lg:grid-cols-[0.9fr_1.1fr]">
-        <aside className="relative hidden overflow-hidden bg-domary-yellow p-12 text-domary-black lg:flex lg:flex-col lg:justify-between">
-          <Link className="focus-ring w-fit text-3xl font-black tracking-[-0.08em] uppercase" href="/">
-            Domary<span className="text-white">.</span>
+    <section className="px-4 py-10 text-black sm:px-6 sm:py-16 lg:px-8">
+      <div className="mx-auto grid max-w-5xl overflow-hidden rounded-[10px] border border-black/8 bg-white lg:min-h-[600px] lg:grid-cols-2">
+        <aside className="hidden flex-col justify-between bg-[#111111] p-12 text-white lg:flex">
+          <Link className="focus-ring w-fit text-xl font-bold tracking-[-0.03em]" href="/">
+            Domary<span className="text-domary-yellow">.</span>
           </Link>
 
-          <div className="relative z-10">
-            <p className="text-xs font-black tracking-[0.2em] uppercase">Sua conta Domary</p>
-            <p className="mt-4 max-w-sm text-5xl leading-[0.92] font-black tracking-[-0.06em] uppercase">
-              Seu estilo.<br />Seu espaço.
+          <div>
+            <p className="display text-5xl">
+              Seu estilo.<br />
+              <span className="text-domary-yellow">Seu espaço.</span>
             </p>
-            <p className="mt-6 max-w-sm text-sm leading-6 text-black/65">
-              Acompanhe pedidos, salve seus favoritos e tenha uma experiência feita para você.
-            </p>
+            <ul className="mt-8 space-y-2.5 text-sm text-white/60">
+              {["Acompanhe pedidos e retiradas", "Salve suas peças favoritas", "Compre mais rápido"].map((item) => (
+                <li className="flex items-center gap-2.5" key={item}>
+                  <span aria-hidden="true" className="size-1.5 rounded-full bg-domary-yellow" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
-
-          <div aria-hidden="true" className="absolute -bottom-28 -right-28 size-80 rounded-full border-[48px] border-black/10" />
         </aside>
 
-        <div className="flex items-center justify-center p-6 sm:p-10 lg:p-16">
-          <div className="w-full max-w-md">
-            <p className="text-xs font-black tracking-[0.2em] text-domary-yellow uppercase">{eyebrow}</p>
-            <h1 className="mt-3 text-4xl font-black tracking-[-0.05em] uppercase sm:text-5xl">{title}</h1>
-            <p className="mt-4 text-sm leading-6 text-black/55">{description}</p>
+        <div className="flex items-center justify-center p-6 sm:p-10 lg:p-14">
+          <div className="w-full max-w-sm">
+            <p className="eyebrow">{eyebrow}</p>
+            <h1 className="display mt-3 text-3xl sm:text-4xl">{title}</h1>
+            <p className="mt-3 text-sm leading-6 text-black/55">{description}</p>
             <div className="mt-8">{children}</div>
           </div>
         </div>
