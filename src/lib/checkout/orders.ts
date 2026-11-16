@@ -225,17 +225,24 @@ export async function applyPagBankPaymentUpdate(orderId: string, update: PagBank
       throw new CheckoutDomainError("O valor notificado pelo PagBank não corresponde ao pedido.", "AMOUNT_MISMATCH", 400);
     }
 
-    await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        status: "CONFIRMED",
-        paymentStatus: "PAID",
-        paymentStatusDetail: update.detail,
-        providerChargeId: update.chargeId,
-        paymentMethod: update.paymentMethod,
-        paidAt: update.paidAt,
-      },
+    const paidData = {
+      status: "CONFIRMED",
+      paymentStatus: "PAID",
+      paymentStatusDetail: update.detail,
+      providerChargeId: update.chargeId,
+      paymentMethod: update.paymentMethod,
+      paidAt: update.paidAt,
+    } satisfies Prisma.OrderUpdateManyMutationInput;
+
+    // A atualização condicional garante que só um webhook (mesmo se o PagBank
+    // reenviar o evento em paralelo) registre a transição para "pago".
+    const transitioned = await prisma.order.updateMany({
+      where: { id: order.id, paymentStatus: { not: "PAID" } },
+      data: paidData,
     });
+    if (transitioned.count === 1) return "newly_paid" as const;
+
+    await prisma.order.update({ where: { id: order.id }, data: paidData });
     return "updated" as const;
   }
 
