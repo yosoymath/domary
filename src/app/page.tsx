@@ -107,13 +107,13 @@ export default async function Home() {
 
   return (
     <>
-      <section id="novidades" className="relative isolate overflow-hidden bg-[#111111] text-white">
+      <section id="novidades" className="surface-ink relative isolate overflow-hidden text-white">
         <div aria-hidden="true" className="absolute inset-0">
           <img alt="" className="size-full object-cover object-[86%_center] sm:object-[80%_center] lg:object-[70%_center]" decoding="async" fetchPriority="high" src="/media/domary-ice-hero-static.webp" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(17,17,17,0.92)_0%,rgba(17,17,17,0.7)_40%,rgba(17,17,17,0.1)_80%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,18,17,0.94)_0%,rgba(18,18,17,0.72)_40%,rgba(18,18,17,0.1)_80%)]" />
         </div>
 
-        <div className="relative mx-auto flex min-h-[560px] max-w-7xl flex-col justify-center px-4 py-20 sm:px-6 lg:min-h-[640px] lg:px-8">
+        <div className="relative mx-auto flex min-h-[520px] max-w-7xl flex-col justify-center px-4 py-20 sm:px-6 lg:min-h-[600px] lg:px-8">
           <p className="eyebrow">Coleção atual</p>
           <h1 className="display mt-5 max-w-2xl text-[clamp(3rem,8vw,6rem)]">
             Vista sua <span className="text-domary-yellow">atitude.</span>
@@ -128,8 +128,8 @@ export default async function Home() {
         </div>
       </section>
 
-      <section aria-label="Diferenciais Domary" className="border-b border-black/8">
-        <ul className="mx-auto grid max-w-7xl gap-4 px-4 py-6 text-sm text-black/60 sm:grid-cols-3 sm:px-6 lg:px-8">
+      <section aria-label="Diferenciais Domary" className="surface-ink">
+        <ul className="mx-auto grid max-w-7xl gap-4 border-t border-white/10 px-4 py-6 text-sm text-white/70 sm:grid-cols-3 sm:px-6 lg:px-8">
           {["Retirada grátis na loja", "Pagamento seguro em até 3x", "Trocas em até 30 dias"].map((item) => (
             <li className="flex items-center gap-2.5" key={item}>
               <span aria-hidden="true" className="size-1.5 rounded-full bg-domary-yellow" />
@@ -139,7 +139,8 @@ export default async function Home() {
         </ul>
       </section>
 
-      <section id="categorias" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+      <section id="categorias" className="surface-sand scroll-mt-24">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
         <div className="mb-10 flex items-end justify-between gap-6">
           <h2 className="display text-4xl sm:text-5xl">Categorias</h2>
           <Link className="link-arrow focus-ring text-black/70" href="/produtos">Ver tudo <ArrowIcon /></Link>
@@ -152,7 +153,7 @@ export default async function Home() {
 
               return (
                 <Link
-                  className={`focus-ring group relative flex min-h-56 overflow-hidden rounded-[10px] p-6 ${category.imageUrl ? "bg-[#111111] text-white" : "bg-black/[0.035]"}`}
+                  className="focus-ring group surface-ink relative flex min-h-60 overflow-hidden rounded-[10px] p-6 sm:p-8"
                   href={`/produtos?colecao=${encodeURIComponent(category.slug)}`}
                   key={category.id}
                 >
@@ -163,23 +164,26 @@ export default async function Home() {
                     </>
                   ) : null}
 
+                  {!category.imageUrl ? <div aria-hidden="true" className="absolute -right-24 -top-24 size-72 rounded-full bg-domary-yellow/[0.07] transition-transform duration-700 group-hover:scale-110" /> : null}
+
                   <div className="relative mt-auto flex w-full items-end justify-between gap-4">
                     <div className="min-w-0">
-                      <h3 className="break-words text-xl font-semibold">{category.name}</h3>
-                      <p className="mt-1 text-sm opacity-60">{productLabel}</p>
+                      <p className="text-xs text-white/50">{productLabel}</p>
+                      <h3 className="mt-1 break-words text-2xl font-semibold">{category.name}</h3>
                     </div>
-                    <span className="shrink-0 opacity-60 transition-transform duration-300 group-hover:translate-x-1 group-hover:opacity-100"><ArrowIcon /></span>
+                    <span className="grid size-10 shrink-0 place-items-center rounded-full bg-domary-yellow text-[#111111] transition-transform duration-300 group-hover:translate-x-1"><ArrowIcon /></span>
                   </div>
                 </Link>
               );
             })}
           </div>
         ) : (
-          <div className="rounded-[10px] bg-black/[0.035] px-6 py-16 text-center">
+          <div className="rounded-[10px] bg-white px-6 py-16 text-center">
             <h3 className="text-xl font-semibold">O catálogo está sendo preparado</h3>
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-black/55">Novas categorias e produtos aparecerão aqui em breve.</p>
           </div>
         )}
+        </div>
       </section>
 
       <section id="produtos" className="mx-auto max-w-7xl scroll-mt-24 px-4 pb-20 sm:px-6 lg:px-8 lg:pb-24">
@@ -197,14 +201,14 @@ export default async function Home() {
 
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
         <h2 className="display text-4xl sm:text-5xl">Como funciona</h2>
-        <ol className="mt-10 grid gap-10 sm:grid-cols-3">
+        <ol className="mt-10 grid gap-4 sm:grid-cols-3">
           {[
             ["Escolha", "Filtre por categoria, tamanho e cor e monte o seu carrinho."],
             ["Pague", "Finalize com segurança pelo PagBank, em até 3x no cartão."],
             ["Retire", "Aguarde a confirmação de que o pedido está pronto e retire na loja."],
           ].map(([title, text], index) => (
-            <li className="border-t border-black/10 pt-5" key={title}>
-              <span className="text-sm text-black/40">0{index + 1}</span>
+            <li className="rounded-[10px] bg-white p-6 sm:p-7" key={title}>
+              <span className="grid size-9 place-items-center rounded-full bg-domary-yellow text-sm font-semibold text-[#111111]">{index + 1}</span>
               <h3 className="mt-3 text-lg font-semibold">{title}</h3>
               <p className="mt-1.5 text-sm leading-6 text-black/55">{text}</p>
             </li>
@@ -212,13 +216,13 @@ export default async function Home() {
         </ol>
       </section>
 
-      <section className="border-t border-black/8">
+      <section className="bg-domary-yellow text-[#111111] [color:var(--color-domary-accent-contrast)]">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-4 py-16 sm:px-6 md:flex-row md:items-center lg:px-8">
           <div>
             <h2 className="display text-3xl sm:text-4xl">Novidades primeiro.</h2>
-            <p className="mt-2 text-sm text-black/55">Crie sua conta para salvar favoritos e acompanhar seus pedidos.</p>
+            <p className="mt-2 text-sm opacity-70">Crie sua conta para salvar favoritos e acompanhar seus pedidos.</p>
           </div>
-          <Link className="btn btn-ink focus-ring" href={user ? "/account" : "/register"}>{user ? "Minha conta" : "Criar conta"}</Link>
+          <Link className="btn focus-ring bg-[#111111] text-white hover:bg-[#2a2a28]" href={user ? "/account" : "/register"}>{user ? "Minha conta" : "Criar conta"}</Link>
         </div>
       </section>
     </>

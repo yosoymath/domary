@@ -119,7 +119,7 @@ export function CatalogBrowser({ children, resultCount, collections, colors, siz
 
   return (
     <>
-      <div className="-mx-4 flex min-w-0 flex-col gap-3 border-y border-black/8 px-4 py-3 sm:-mx-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:static lg:mx-0 lg:px-0 lg:py-5">
+      <div className="-mx-4 flex min-w-0 flex-col gap-3 border-b border-black/8 px-4 py-3 sm:-mx-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:static lg:mx-0 lg:px-0 lg:py-5">
         <p className="text-sm text-black/55">{resultCount} {resultCount === 1 ? "produto" : "produtos"}</p>
         <div className="flex min-w-0 items-center justify-between gap-2 sm:justify-end sm:gap-5">
           <button aria-expanded={mobileFiltersOpen || !desktopFiltersHidden} className="focus-ring inline-flex min-h-10 items-center gap-2 rounded-md px-2 text-sm hover:bg-black/5" onClick={toggleFilters} type="button">Filtros <SlidersIcon />{activeFilterCount ? <span className="grid size-5 place-items-center rounded-full bg-domary-yellow text-[10px] font-semibold">{activeFilterCount}</span> : null}</button>

@@ -17,7 +17,7 @@ type SupportPageShellProps = {
 export function SupportPageShell({ activePath, eyebrow, title, description, children }: SupportPageShellProps) {
   return (
     <div className="bg-domary-cream">
-      <section className="border-b border-black/8 px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+      <section className="surface-sand px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <div className="relative mx-auto max-w-7xl">
           <nav aria-label="Navegação estrutural" className="flex items-center gap-2 text-xs text-black/45">
             <Link className="focus-ring hover:text-black" href="/">Início</Link>
