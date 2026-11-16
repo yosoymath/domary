@@ -17,10 +17,20 @@ type ProductCardProps = {
 
 const toneClasses = {
   yellow: "bg-domary-yellow",
-  stone: "bg-stone-300",
-  dark: "bg-zinc-800",
+  stone: "bg-[#d9d6cc]",
+  dark: "bg-[#2a2a28]",
   cream: "bg-[#eae5d8]",
 };
+
+function optimizedCardImageUrl(imageUrl: string) {
+  const cloudinaryUploadMarker = "/image/upload/";
+  if (!imageUrl.startsWith("https://res.cloudinary.com/") || !imageUrl.includes(cloudinaryUploadMarker)) return imageUrl;
+
+  const [prefix, suffix] = imageUrl.split(cloudinaryUploadMarker);
+  if (!prefix || !suffix || !/^v\d+\//.test(suffix)) return imageUrl;
+
+  return `${prefix}${cloudinaryUploadMarker}f_auto,q_auto:eco,c_fill,g_auto,w_720,h_720/${suffix}`;
+}
 
 function ProductShape({ shape }: Pick<ProductCardProps, "shape">) {
   if (shape === "bag") {
@@ -63,16 +73,18 @@ function ProductShape({ shape }: Pick<ProductCardProps, "shape">) {
 
 export function ProductCard({ productId, productSlug, isFavorited = false, badge, name, category, price, oldPrice, imageUrl, tone, shape }: ProductCardProps) {
   const productHref = productSlug ? `/produtos/${productSlug}` : undefined;
+  const isDiscount = badge?.startsWith("-");
 
   return (
     <article className="group relative min-w-0">
-      {productHref ? <Link aria-label={`Ver detalhes de ${name}`} className="focus-ring absolute inset-0 z-10 rounded-2xl" href={productHref}><span className="sr-only">Ver detalhes de {name}</span></Link> : null}
-      <div className={`relative grid aspect-square place-items-center overflow-hidden rounded-2xl ${imageUrl ? "bg-[#f5f5f5]" : toneClasses[tone]}`}>
-        {!imageUrl ? <div className="absolute -right-10 -top-10 size-36 rounded-full border-[24px] border-white/15" /> : null}
-        {badge ? <span className="absolute left-4 top-4 z-10 rounded-full bg-white px-3 py-1 text-[10px] font-semibold tracking-wider uppercase shadow-sm">{badge}</span> : null}
+      {productHref ? <Link aria-label={`Ver detalhes de ${name}`} className="focus-ring absolute inset-0 z-10 rounded-[10px]" href={productHref}><span className="sr-only">Ver detalhes de {name}</span></Link> : null}
+      <div className={`relative grid aspect-[4/5] place-items-center overflow-hidden rounded-[10px] ${imageUrl ? "bg-[#f1f0eb]" : toneClasses[tone]}`}>
+        {badge ? (
+          <span className={`absolute left-3 top-3 z-10 rounded-md px-2 py-0.5 text-[11px] font-semibold ${isDiscount ? "bg-domary-yellow text-[#111111]" : "bg-[#111111]/75 text-white"}`}>{badge}</span>
+        ) : null}
         {productId ? (
-          <form action={toggleFavorite.bind(null, productId, productHref ?? "/")} className="absolute right-4 top-4 z-20">
-            <button className="focus-ring grid size-9 place-items-center rounded-full bg-white/90 text-lg text-red-600 transition-transform hover:scale-110" aria-label={isFavorited ? `Remover ${name} dos favoritos` : `Adicionar ${name} aos favoritos`} title={isFavorited ? "Remover dos favoritos" : "Adicionar aos favoritos"} type="submit">
+          <form action={toggleFavorite.bind(null, productId, productHref ?? "/")} className="absolute right-3 top-3 z-20">
+            <button className={`focus-ring grid size-8 place-items-center rounded-full bg-white/90 text-sm transition-opacity ${isFavorited ? "text-red-600" : "text-[#111111] opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100"}`} aria-label={isFavorited ? `Remover ${name} dos favoritos` : `Adicionar ${name} aos favoritos`} title={isFavorited ? "Remover dos favoritos" : "Adicionar aos favoritos"} type="submit">
               {isFavorited ? "♥" : "♡"}
             </button>
           </form>
@@ -80,22 +92,19 @@ export function ProductCard({ productId, productSlug, isFavorited = false, badge
         {imageUrl ? (
           <img
             alt={`Foto de ${name}`}
-            className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            className="absolute inset-0 size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
             decoding="async"
             loading="lazy"
-            src={imageUrl}
+            src={optimizedCardImageUrl(imageUrl)}
           />
         ) : <ProductShape shape={shape} />}
-        <span className="pointer-events-none absolute inset-x-4 bottom-4 z-10 translate-y-20 rounded-full bg-white px-4 py-3 text-center text-xs font-semibold uppercase opacity-0 shadow-lg transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
-          Ver produto
-        </span>
       </div>
 
-      <div className="px-1 pt-4">
-        <p className="text-[11px] font-medium tracking-[0.14em] text-black/45 uppercase">{category}</p>
-        <h3 className="mt-1 [overflow-wrap:anywhere] font-semibold leading-snug">{name}</h3>
-        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="font-bold">{price}</span>
+      <div className="pt-3">
+        <h3 className="[overflow-wrap:anywhere] text-sm leading-snug font-medium">{name}</h3>
+        <p className="mt-0.5 text-xs text-black/45">{category}</p>
+        <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <span className="text-sm font-semibold">{price}</span>
           {oldPrice ? <span className="text-xs text-black/40 line-through">{oldPrice}</span> : null}
         </div>
       </div>

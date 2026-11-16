@@ -3,6 +3,7 @@ import { z } from "zod";
 import { applyPagBankPaymentUpdate, CheckoutDomainError } from "@/lib/checkout/orders";
 import { verifyPagBankSignature } from "@/lib/pagbank/signature";
 import { parsePagBankPaymentUpdate, type PagBankWebhookPayload } from "@/lib/pagbank/webhook";
+import { notifyOrderPaid } from "@/lib/notifications/whatsapp";
 
 export const runtime = "nodejs";
 
@@ -37,6 +38,8 @@ export async function POST(request: Request) {
   try {
     const result = await applyPagBankPaymentUpdate(orderId.data, update);
     if (result === "not_found") return new Response(null, { status: 204 });
+
+    if (result === "newly_paid") await notifyOrderPaid(orderId.data);
 
     revalidatePath("/account/orders");
     revalidatePath("/account/orders/[number]", "page");

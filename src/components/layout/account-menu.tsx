@@ -12,7 +12,7 @@ function UserIcon() {
 
 export function AccountMenuFallback() {
   return (
-    <Link className="focus-ring grid size-10 place-items-center rounded-full transition-colors hover:bg-black/5" href="/login" aria-label="Minha conta">
+    <Link className="focus-ring grid size-10 place-items-center rounded-md transition-colors hover:bg-black/5" href="/login" aria-label="Minha conta">
       <UserIcon />
     </Link>
   );

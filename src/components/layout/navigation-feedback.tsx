@@ -6,9 +6,9 @@ import { useToast } from "@/components/ui/toast";
 
 type NavigationPhase = "idle" | "loading" | "complete";
 
-const MINIMUM_FEEDBACK_MS = 220;
+const MINIMUM_FEEDBACK_MS = 80;
 const MAXIMUM_FEEDBACK_MS = 6_500;
-const COMPLETION_VISIBLE_MS = 260;
+const COMPLETION_VISIBLE_MS = 120;
 const LOGOUT_FEEDBACK_PARAM = "session";
 const LOGOUT_FEEDBACK_VALUE = "ended";
 

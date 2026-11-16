@@ -1,38 +1,36 @@
 .section {
-  background: #111111;
-  color: #ffffff;
+  background: var(--background);
+  border-block: 1px solid rgb(0 0 0 / 8%);
+  color: var(--foreground);
   overflow: hidden;
-  padding-block: 2.75rem;
+  padding-block: 3.5rem;
 }
 
 .eyebrow {
-  color: #f5c400;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.24em;
-  margin: 0 0 0.65rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  margin: 0 0 0.5rem;
+  opacity: 0.55;
   text-transform: uppercase;
 }
 
 .title {
-  font-size: clamp(1.65rem, 4vw, 2.6rem);
-  font-weight: 900;
-  letter-spacing: -0.055em;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-stretch: 88%;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   line-height: 1;
   margin: 0;
-  text-transform: uppercase;
 }
 
 .hint {
-  color: rgb(255 255 255 / 55%);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  margin: 0.75rem 0 0;
+  display: none;
 }
 
 .marqueeFrame {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   position: relative;
 }
 
@@ -47,29 +45,22 @@
 }
 
 .marqueeFrame::before {
-  background: linear-gradient(90deg, #111111, transparent);
+  background: linear-gradient(90deg, var(--background), transparent);
   left: 0;
 }
 
 .marqueeFrame::after {
-  background: linear-gradient(270deg, #111111, transparent);
+  background: linear-gradient(270deg, var(--background), transparent);
   right: 0;
 }
 
 .viewport {
+  contain: paint;
   cursor: grab;
-  overscroll-behavior-inline: contain;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
   position: relative;
-  scrollbar-width: none;
-  touch-action: pan-x pan-y pinch-zoom;
+  touch-action: pan-y pinch-zoom;
   user-select: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.viewport::-webkit-scrollbar {
-  display: none;
 }
 
 .viewport:focus-visible {
@@ -83,6 +74,8 @@
 
 .track {
   display: flex;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
   width: max-content;
 }
 
@@ -96,84 +89,39 @@
 
 .brand {
   align-items: center;
-  background: #1b1b1b;
-  border: 1px solid rgb(255 255 255 / 12%);
-  border-radius: 999px;
   display: flex;
   flex: 0 0 auto;
-  gap: 0.7rem;
-  min-height: 4.5rem;
-  padding: 0.8rem 1.4rem;
+  min-height: 4rem;
   white-space: nowrap;
 }
 
 .brandWithLogo {
-  gap: 0.6rem;
-  padding: 0.55rem 0.7rem;
+  padding: 0.45rem;
 }
 
 .logoPlate {
   align-items: center;
-  background: #fff;
-  border-radius: 999px;
   display: flex;
-  height: 3.35rem;
+  height: 3rem;
   justify-content: center;
-  min-width: 8.5rem;
-  overflow: hidden;
-  padding: 0.45rem 0.85rem;
-  width: 9.5rem;
+  padding: 0 1.25rem;
+  width: 9rem;
 }
 
 .logo {
+  filter: grayscale(1);
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+  transition: filter 200ms ease, opacity 200ms ease;
   display: block;
   height: 100%;
   max-height: 2.45rem;
   max-width: 100%;
   object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
   width: 100%;
-}
-
-.logoDetail {
-  color: rgb(255 255 255 / 58%);
-  font-size: 0.57rem;
-  font-weight: 800;
-  letter-spacing: 0.13em;
-  padding-right: 0.45rem;
-  text-transform: uppercase;
-}
-
-.mark {
-  align-items: center;
-  background: #f5c400;
-  border-radius: 50%;
-  color: #111111;
-  display: inline-flex;
-  flex: 0 0 auto;
-  font-size: 0.7rem;
-  font-weight: 950;
-  height: 2rem;
-  justify-content: center;
-  letter-spacing: -0.06em;
-  width: 2rem;
-}
-
-.name {
-  font-size: 1rem;
-  font-weight: 900;
-  letter-spacing: -0.035em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.detail {
-  color: rgb(255 255 255 / 50%);
-  display: block;
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  margin-top: 0.35rem;
-  text-transform: uppercase;
 }
 
 @media (max-width: 639px) {
@@ -206,10 +154,8 @@
   }
 
   .brandWithLogo {
-    flex-direction: column;
-    gap: 0.25rem;
     justify-content: center;
-    padding: 0.4rem 0.55rem;
+    padding: 0.4rem;
     width: 9.5rem;
   }
 
@@ -223,10 +169,18 @@
   .logo {
     max-height: 2.2rem;
   }
+}
 
-  .logoDetail {
-    font-size: 0.49rem;
-    line-height: 1;
-    padding-right: 0;
-  }
+.brand:hover .logo {
+  filter: none;
+  opacity: 1;
+}
+
+:global(.dark) .section {
+  border-color: rgb(255 255 255 / 8%);
+}
+
+:global(.dark) .logo {
+  filter: grayscale(1) invert(1);
+  mix-blend-mode: screen;
 }
