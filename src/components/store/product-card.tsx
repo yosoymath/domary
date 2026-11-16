@@ -78,7 +78,7 @@ export function ProductCard({ productId, productSlug, isFavorited = false, badge
   return (
     <article className="group relative min-w-0">
       {productHref ? <Link aria-label={`Ver detalhes de ${name}`} className="focus-ring absolute inset-0 z-10 rounded-[10px]" href={productHref}><span className="sr-only">Ver detalhes de {name}</span></Link> : null}
-      <div className={`relative grid aspect-[4/5] place-items-center overflow-hidden rounded-[10px] ${imageUrl ? "bg-[#f1f0eb]" : toneClasses[tone]}`}>
+      <div className={`relative grid aspect-[4/5] place-items-center overflow-hidden rounded-[10px] ${imageUrl ? "bg-[#e9e5dc]" : toneClasses[tone]}`}>
         {badge ? (
           <span className={`absolute left-3 top-3 z-10 rounded-md px-2 py-0.5 text-[11px] font-semibold ${isDiscount ? "bg-domary-yellow text-[#111111]" : "bg-[#111111]/75 text-white"}`}>{badge}</span>
         ) : null}

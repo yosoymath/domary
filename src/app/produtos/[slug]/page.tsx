@@ -128,7 +128,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <>
-      <div className="border-b border-black/8 bg-white">
+      <div className="border-b border-black/8">
         <nav aria-label="Navegação estrutural" className="mx-auto flex max-w-7xl min-w-0 items-center gap-2 overflow-hidden px-4 py-4 text-[11px] font-semibold tracking-[0.12em] text-black/45 uppercase sm:px-6 lg:px-8">
           <Link className="focus-ring shrink-0 hover:text-black" href="/">Início</Link><span aria-hidden="true">/</span>
           <Link className="focus-ring shrink-0 hover:text-black" href={`/produtos?colecao=${encodeURIComponent(product.category.slug)}`}>{product.category.name}</Link><span aria-hidden="true">/</span>
@@ -136,7 +136,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </nav>
       </div>
 
-      <section className="bg-white">
+      <section>
         <div className="mx-auto grid max-w-7xl min-w-0 gap-8 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(20rem,0.7fr)] lg:gap-10 lg:px-8 lg:py-10">
           <div className="min-w-0">
             {product.images.length
@@ -175,7 +175,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </section>
 
       {relatedProducts.length ? (
-        <section className="border-t border-black/8">
+        <section className="surface-sand">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
             <p className="eyebrow text-black/55">Você também pode gostar</p>
             <h2 className="display mt-3 text-3xl sm:text-4xl">Mais de {product.category.name}</h2>

@@ -3,7 +3,7 @@
 @property --background {
   syntax: "<color>";
   inherits: true;
-  initial-value: #f8f7f2;
+  initial-value: #f3f0e8;
 }
 
 @property --foreground {
@@ -21,7 +21,7 @@
 @property --color-domary-cream {
   syntax: "<color>";
   inherits: true;
-  initial-value: #f8f7f2;
+  initial-value: #f3f0e8;
 }
 
 @property --surface-white {
@@ -70,11 +70,11 @@
 }
 
 :root {
-  --background: #f8f7f2;
+  --background: #f3f0e8;
   --foreground: #111111;
   --color-black: #000000;
-  --color-domary-cream: #f8f7f2;
-  --focus-inner: #f8f7f2;
+  --color-domary-cream: #f3f0e8;
+  --focus-inner: #f3f0e8;
   --focus-outer: #111111;
   --surface-white: #ffffff;
   --surface-white-90: rgb(255 255 255 / 90%);
@@ -186,6 +186,31 @@ a[href]:active {
 :root {
   --radius-control: 6px;
   --radius-card: 10px;
+  --surface-sand: #e8e3d7;
+  --surface-ink: #121211;
+}
+
+:root[data-theme-mode="light"] {
+  --surface-sand: #f1efe9;
+}
+
+:root.dark {
+  --surface-sand: #171715;
+  --surface-ink: #1b1b19;
+}
+
+/* Faixas de cor que dão ritmo às páginas sem adicionar ornamentos. */
+.surface-sand {
+  background-color: var(--surface-sand);
+}
+
+.surface-ink {
+  background-color: var(--surface-ink);
+  color: #f4f4f2;
+}
+
+:root.dark .surface-ink {
+  border-block: 1px solid rgb(255 255 255 / 6%);
 }
 
 /* Títulos usam a fonte display condensada da marca. */
@@ -326,7 +351,8 @@ a[href]:active {
 .dark [class~="bg-[#f3f3ef]"],
 .dark [class~="bg-[#eae5d8]"],
 .dark [class~="bg-[#fafaf8]"],
-.dark [class~="bg-[#f1f0eb]"] {
+.dark [class~="bg-[#f1f0eb]"],
+.dark [class~="bg-[#e9e5dc]"] {
   background-color: #20201e;
 }
 

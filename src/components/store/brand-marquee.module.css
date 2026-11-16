@@ -1,9 +1,8 @@
 .section {
-  background: var(--background);
-  border-block: 1px solid rgb(0 0 0 / 8%);
-  color: var(--foreground);
+  background: var(--surface-ink);
+  color: #f4f4f2;
   overflow: hidden;
-  padding-block: 3.5rem;
+  padding-block: 4rem;
 }
 
 .eyebrow {
@@ -45,12 +44,12 @@
 }
 
 .marqueeFrame::before {
-  background: linear-gradient(90deg, var(--background), transparent);
+  background: linear-gradient(90deg, var(--surface-ink), transparent);
   left: 0;
 }
 
 .marqueeFrame::after {
-  background: linear-gradient(270deg, var(--background), transparent);
+  background: linear-gradient(270deg, var(--surface-ink), transparent);
   right: 0;
 }
 
@@ -101,17 +100,18 @@
 
 .logoPlate {
   align-items: center;
+  background: #ffffff;
+  border-radius: 8px;
   display: flex;
-  height: 3rem;
+  height: 3.25rem;
   justify-content: center;
-  padding: 0 1.25rem;
+  padding: 0.4rem 1rem;
   width: 9rem;
 }
 
 .logo {
   filter: grayscale(1);
-  mix-blend-mode: multiply;
-  opacity: 0.6;
+  opacity: 0.75;
   transition: filter 200ms ease, opacity 200ms ease;
   display: block;
   height: 100%;
@@ -176,11 +176,4 @@
   opacity: 1;
 }
 
-:global(.dark) .section {
-  border-color: rgb(255 255 255 / 8%);
-}
 
-:global(.dark) .logo {
-  filter: grayscale(1) invert(1);
-  mix-blend-mode: screen;
-}

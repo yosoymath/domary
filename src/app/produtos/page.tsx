@@ -130,8 +130,8 @@ export default async function ProductsPage({ searchParams }: { searchParams: Cat
 
   return (
     <section>
-      <div>
-        <div className="mx-auto max-w-7xl px-4 pb-8 pt-8 sm:px-6 lg:px-8 lg:pt-10">
+      <div className="surface-sand">
+        <div className="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 lg:px-8 lg:pt-10">
           <nav aria-label="Navegação estrutural" className="flex items-center gap-2 text-xs text-black/45"><Link className="focus-ring hover:text-black" href="/">Início</Link><span aria-hidden="true">/</span><span className="text-black/70">Produtos</span></nav>
 
           <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_minmax(0,26rem)] lg:items-end">
@@ -148,7 +148,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Cat
               <label className="sr-only" htmlFor="catalog-search">Pesquisar produtos</label>
               <div className="relative">
                 <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-black/40"><SearchIcon /></span>
-                <input className="focus-ring min-h-11 w-full rounded-md bg-black/[0.04] pl-11 pr-4 text-sm placeholder:text-black/40" defaultValue={query} id="catalog-search" maxLength={100} name="q" placeholder="Buscar por nome, coleção ou cor" type="search" />
+                <input className="focus-ring min-h-11 w-full rounded-md bg-white pl-11 pr-4 text-sm placeholder:text-black/40" defaultValue={query} id="catalog-search" maxLength={100} name="q" placeholder="Buscar por nome, coleção ou cor" type="search" />
                 <button className="sr-only" type="submit">Buscar</button>
               </div>
             </form>
