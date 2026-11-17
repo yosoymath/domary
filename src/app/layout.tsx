@@ -26,34 +26,12 @@ const themeInitializationScript = `
   (function () {
     try {
       var savedTheme = localStorage.getItem("domary-theme");
-      var validThemes = ["classic", "light", "dark", "system"];
-      var theme = validThemes.indexOf(savedTheme) >= 0 ? savedTheme : "system";
-      var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      var dark = theme === "dark" || (theme === "system" && prefersDark);
-      var accent = localStorage.getItem("domary-accent");
+      var dark = savedTheme === "dark"
+        || (savedTheme !== "light" && savedTheme !== "classic" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
-      if (!/^#[0-9a-f]{6}$/i.test(accent || "")) accent = "#f5c400";
-
-      var value = parseInt(accent.slice(1), 16);
-      var channels = [(value >> 16) & 255, (value >> 8) & 255, value & 255];
-      var light = channels.map(function (channel) {
-        return Math.round(channel + (255 - channel) * 0.52);
-      });
-      var lightAccent = "#" + light.map(function (channel) {
-        return channel.toString(16).padStart(2, "0");
-      }).join("");
-      var linear = channels.map(function (channel) {
-        var normalized = channel / 255;
-        return normalized <= 0.03928 ? normalized / 12.92 : Math.pow((normalized + 0.055) / 1.055, 2.4);
-      });
-      var luminance = linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
-
-      document.documentElement.dataset.themeMode = theme;
+      localStorage.removeItem("domary-accent");
       document.documentElement.classList.toggle("dark", dark);
       document.documentElement.style.colorScheme = dark ? "dark" : "light";
-      document.documentElement.style.setProperty("--color-domary-yellow", accent.toLowerCase());
-      document.documentElement.style.setProperty("--color-domary-yellow-light", lightAccent);
-      document.documentElement.style.setProperty("--color-domary-accent-contrast", luminance > 0.42 ? "#111111" : "#ffffff");
     } catch (_) {}
   })();
 `;
