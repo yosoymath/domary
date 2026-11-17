@@ -82,13 +82,6 @@
   color-scheme: light;
 }
 
-:root[data-theme-mode="light"] {
-  --background: #ffffff;
-  --color-domary-cream: #fbfbf8;
-  --surface-white: #ffffff;
-  --surface-white-90: rgb(255 255 255 / 92%);
-}
-
 :root.dark {
   --background: #10100f;
   --foreground: #f4f4f2;
@@ -188,10 +181,6 @@ a[href]:active {
   --radius-card: 10px;
   --surface-sand: #e8e3d7;
   --surface-ink: #121211;
-}
-
-:root[data-theme-mode="light"] {
-  --surface-sand: #f1efe9;
 }
 
 :root.dark {

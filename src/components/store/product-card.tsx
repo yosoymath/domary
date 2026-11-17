@@ -22,7 +22,7 @@ const toneClasses = {
   cream: "bg-[#eae5d8]",
 };
 
-function optimizedCardImageUrl(imageUrl: string) {
+export function optimizedCardImageUrl(imageUrl: string) {
   const cloudinaryUploadMarker = "/image/upload/";
   if (!imageUrl.startsWith("https://res.cloudinary.com/") || !imageUrl.includes(cloudinaryUploadMarker)) return imageUrl;
 
@@ -32,7 +32,7 @@ function optimizedCardImageUrl(imageUrl: string) {
   return `${prefix}${cloudinaryUploadMarker}f_auto,q_auto:eco,c_fill,g_auto,w_720,h_720/${suffix}`;
 }
 
-function ProductShape({ shape }: Pick<ProductCardProps, "shape">) {
+export function ProductShape({ shape }: Pick<ProductCardProps, "shape">) {
   if (shape === "bag") {
     return (
       <svg aria-hidden="true" className="h-44 w-44 drop-shadow-2xl transition-transform duration-500 group-hover:-rotate-3 group-hover:scale-105" viewBox="0 0 200 200">
@@ -78,9 +78,9 @@ export function ProductCard({ productId, productSlug, isFavorited = false, badge
   return (
     <article className="group relative min-w-0">
       {productHref ? <Link aria-label={`Ver detalhes de ${name}`} className="focus-ring absolute inset-0 z-10 rounded-[10px]" href={productHref}><span className="sr-only">Ver detalhes de {name}</span></Link> : null}
-      <div className={`relative grid aspect-[4/5] place-items-center overflow-hidden rounded-[10px] ${imageUrl ? "bg-[#e9e5dc]" : toneClasses[tone]}`}>
+      <div className={`relative grid aspect-[4/5] place-items-center overflow-hidden rounded-[6px] ${imageUrl ? "bg-[#e4e3e0]" : toneClasses[tone]}`}>
         {badge ? (
-          <span className={`absolute left-3 top-3 z-10 rounded-md px-2 py-0.5 text-[11px] font-semibold ${isDiscount ? "bg-domary-yellow text-[#111111]" : "bg-[#111111]/75 text-white"}`}>{badge}</span>
+          <span className={`absolute left-3 top-3 z-10 rounded-[3px] px-2 py-1 text-[11px] font-extrabold tracking-wide uppercase ${isDiscount ? "bg-[#111111] text-white" : "bg-domary-yellow text-[#111111]"}`}>{isDiscount ? `${badge.slice(1)} OFF` : badge}</span>
         ) : null}
         {productId ? (
           <form action={toggleFavorite.bind(null, productId, productHref ?? "/")} className="absolute right-3 top-3 z-20">
@@ -92,7 +92,7 @@ export function ProductCard({ productId, productSlug, isFavorited = false, badge
         {imageUrl ? (
           <img
             alt={`Foto de ${name}`}
-            className="absolute inset-0 size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+            className="absolute inset-0 size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
             decoding="async"
             loading="lazy"
             src={optimizedCardImageUrl(imageUrl)}
@@ -100,12 +100,12 @@ export function ProductCard({ productId, productSlug, isFavorited = false, badge
         ) : <ProductShape shape={shape} />}
       </div>
 
-      <div className="pt-3">
-        <h3 className="[overflow-wrap:anywhere] text-sm leading-snug font-medium">{name}</h3>
+      <div className="pt-3 text-center">
+        <h3 className="[overflow-wrap:anywhere] text-sm leading-snug font-medium sm:text-[15px]">{name}</h3>
         <p className="mt-0.5 text-xs text-black/45">{category}</p>
-        <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <span className="text-sm font-semibold">{price}</span>
+        <div className="mt-1.5 flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
           {oldPrice ? <span className="text-xs text-black/40 line-through">{oldPrice}</span> : null}
+          <span className="text-base font-semibold">{price}</span>
         </div>
       </div>
     </article>

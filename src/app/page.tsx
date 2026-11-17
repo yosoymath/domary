@@ -1,7 +1,9 @@
+import type { ComponentProps } from "react";
 import Link from "next/link";
 import type { Prisma } from "@prisma/client";
 import { ProductCard } from "@/components/store/product-card";
 import { BrandMarquee } from "@/components/store/brand-marquee";
+import { HomeHero, type HomeHeroProduct } from "@/components/store/home-hero";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatCurrency } from "@/lib/formatters";
 import { prisma } from "@/lib/prisma";
@@ -75,7 +77,7 @@ export default async function Home() {
     : new Set<string>();
   const tones = ["yellow", "stone", "dark", "cream"] as const;
   const shapes = ["shirt", "bag", "dress", "cap"] as const;
-  const products = catalogProducts.length
+  const products: ComponentProps<typeof ProductCard>[] = catalogProducts.length
     ? catalogProducts.map((product, index) => {
         const promotionPercentage = Math.max(
           0,
@@ -104,35 +106,31 @@ export default async function Home() {
         };
       })
     : fallbackProducts;
+  const heroProducts: HomeHeroProduct[] = [...products]
+    .sort((a, b) => Number(Boolean(b.imageUrl)) - Number(Boolean(a.imageUrl)))
+    .slice(0, 3)
+    .map((product) => ({
+      name: product.name,
+      href: product.productSlug ? `/produtos/${product.productSlug}` : undefined,
+      imageUrl: product.imageUrl,
+      shape: product.shape,
+    }));
 
   return (
     <>
-      <section id="novidades" className="surface-ink relative isolate overflow-hidden text-white">
-        <div aria-hidden="true" className="absolute inset-0">
-          <img alt="" className="size-full object-cover object-[86%_center] sm:object-[80%_center] lg:object-[70%_center]" decoding="async" fetchPriority="high" src="/media/domary-ice-hero-static.webp" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,18,17,0.94)_0%,rgba(18,18,17,0.72)_40%,rgba(18,18,17,0.1)_80%)]" />
-        </div>
+      <HomeHero products={heroProducts} />
 
-        <div className="relative mx-auto flex min-h-[520px] max-w-7xl flex-col justify-center px-4 py-20 sm:px-6 lg:min-h-[600px] lg:px-8">
-          <p className="eyebrow">Coleção atual</p>
-          <h1 className="display mt-5 max-w-2xl text-[clamp(3rem,8vw,6rem)]">
-            Vista sua <span className="text-domary-yellow">atitude.</span>
-          </h1>
-          <p className="mt-6 max-w-md text-base leading-7 text-white/70">
-            Roupas e acessórios com design marcante e conforto real. Compre online e retire na loja.
-          </p>
-          <div className="mt-10 flex flex-wrap items-center gap-6">
-            <Link className="btn btn-primary focus-ring" href="/produtos">Ver a loja</Link>
-            <Link className="link-arrow focus-ring text-white/85" href="#categorias">Categorias <ArrowIcon /></Link>
-          </div>
-        </div>
-      </section>
-
-      <section aria-label="Diferenciais Domary" className="surface-ink">
-        <ul className="mx-auto grid max-w-7xl gap-4 border-t border-white/10 px-4 py-6 text-sm text-white/70 sm:grid-cols-3 sm:px-6 lg:px-8">
-          {["Retirada grátis na loja", "Pagamento seguro em até 3x", "Trocas em até 30 dias"].map((item) => (
-            <li className="flex items-center gap-2.5" key={item}>
-              <span aria-hidden="true" className="size-1.5 rounded-full bg-domary-yellow" />
+      <section aria-label="Diferenciais Domary" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <ul className="grid gap-3 py-5 text-sm text-black/65 sm:grid-cols-3 sm:gap-4">
+          {[
+            ["Retirada grátis na loja", "M3 9.5 12 4l9 5.5M5 10v9h14v-9M10 19v-5h4v5"],
+            ["Pagamento seguro em até 3x", "M3.5 7.5h17v10h-17zM3.5 11h17M7 14.5h3"],
+            ["Trocas em até 30 dias", "M4 12a8 8 0 0 1 13.7-5.6L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.7 5.6L4 15.5M4 20v-4.5h4.5"],
+          ].map(([item, icon]) => (
+            <li className="flex items-center gap-3" key={item}>
+              <svg aria-hidden="true" className="size-5 shrink-0 text-black/45" fill="none" viewBox="0 0 24 24">
+                <path d={icon} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" />
+              </svg>
               {item}
             </li>
           ))}
@@ -186,10 +184,10 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="produtos" className="mx-auto max-w-7xl scroll-mt-24 px-4 pb-20 sm:px-6 lg:px-8 lg:pb-24">
-        <div className="mb-10 flex items-end justify-between gap-6">
-          <h2 className="display text-4xl sm:text-5xl">Mais vendidos</h2>
-          <Link className="link-arrow focus-ring text-black/70" href="/produtos">Ver todos <ArrowIcon /></Link>
+      <section id="produtos" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div className="mb-8 flex items-end justify-between gap-6">
+          <h2 className="display text-4xl uppercase sm:text-5xl">Mais vendidos</h2>
+          <Link className="focus-ring shrink-0 whitespace-nowrap border-b-2 border-black pb-1 text-xs font-extrabold tracking-[0.14em] uppercase" href="/produtos">Ver todos →</Link>
         </div>
 
         <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6">
